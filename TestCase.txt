@@ -1,0 +1,147 @@
+## Positive Tests:
+
+- **Test-1**:
+    - POST / users - **Create a user with valid data**
+    - Endpoint  - /users
+    - HTTP method - POST
+    - Pre-conditions - ‘X-API-key’ in header
+    - steps  - Body : {”name” : <name of new user>}
+    - expected result -  201 created , JSON with id, name, balance, createdOn
+    
+- **Test-2**:
+    - GET / balance/<valid user_id> - **Check current balance of valid user**
+    - Endpoint  - /balance/<valid user_id>
+    - HTTP method - GET
+    - Pre-conditions - ‘X-API-key’ in header
+    - steps - <user-id> in parameters
+    - expected result -  200 OK , JSON with id, balance
+    
+- **Test-3**:
+    - POST / fund - **Add valid amount to valid users account**
+    - Endpoint  - /fund
+    - HTTP method - POST
+    - Pre-conditions - ‘X-API-key’ in header
+    - steps  - Body : {”id” : <valid user_id>, “amount” : <valid amount-to-send>}
+    - expected result -  200 OK , JSON with id, balance
+    
+- **Test-4**:
+    - POST / transfer - **make a valid transaction between valid users**
+    - Endpoint  - /transfer
+    - HTTP method - POST
+    - Pre-conditions - ‘X-API-key’ in header
+    - steps  - Body : {”from” : “<valid sender_id>”, “to” : <valid reciever_id>,  “amount” : <valid amount to transfer>}
+    - expected result -  200 OK , JSON with from, to, amount, date
+
+## Negative Tests:
+
+- **Test-1**:
+    - **POST / users** - **Empty name field**
+    - Endpoint  - /users
+    - HTTP method - POST
+    - Pre-conditions - ‘X-API-key’ in header
+    - steps  - Body : {”name” : “ ”}
+    - expected result -  400 Bad request , JSON with msg
+    
+- **Test-2**:
+    - **POST / users** - **without ‘X-API-Key’**
+    - Endpoint  - /users
+    - HTTP method - POST
+    - Pre-conditions -
+    - steps  - Body : {”name” : “<name of new user>”}
+    - expected result -  401 Unauthorized Access , JSON with msg
+
+- **Test-3**:
+    - **GET / balance/ <user_id>** - **Invalid user id**
+    - Endpoint  - /balance/<user_id>
+    - HTTP method - GET
+    - Pre-conditions - ‘X-API-key’ in header
+    - steps  - invalid <user_id> in parameter
+    - expected result -  404 Not Found , JSON with msg
+    
+- **Test-4**:
+    - **GET/balance/<used_id>** - **valid name without valid header**
+    - Endpoint  - /balance/<user_id>
+    - HTTP method - GET
+    - Pre-conditions -
+    - steps  - valid <user_id> in parameter
+    - expected result -  401 unauthorized access, JSON with msg
+    
+- **Test-5**:
+    - **POST/fund** - **valid id and amount but without header**
+    - Endpoint  - /fund
+    - HTTP method - POST
+    - Pre-conditions -
+    - steps  - {”id” :  <valid-user-id>, “amount” : <valid amount>}
+    - expected result -  401 unauthorized access, JSON with msg
+    
+- **Test-6**:
+    - **POST/fund** - **valid header with valid id and invalid amount**
+    - Endpoint  - /fund
+    - HTTP method - POST
+    - Pre-conditions - ‘X-API-key’ in Header
+    - steps  - {”id” :  <valid-user-id>, “amount” : <invalid amount( ≤ 0)>}
+    - expected result -  400 Bad Request, JSON with msg
+    
+- **Test-7**:
+    - **POST/fund** - **valid header with invalid user id and valid amount**
+    - Endpoint  - /fund
+    - HTTP method - POST
+    - Pre-conditions - ‘X-API-key’ in Header
+    - steps  - {”id” :  <invalid-user-id>, “amount” : <valid amount>}
+    - expected result -  404 Not Found, JSON with msg
+
+- **Test-8**:
+    - **POST/fund** - **valid id and amount but without header**
+    - Endpoint  - /fund
+    - HTTP method - POST
+    - Pre-conditions -
+    - steps  - {”id” :  <valid-user-id>, “amount” : <valid amount>}
+    - expected result -  401 unauthorized access, JSON with msg
+    
+- **Test-9**:
+    - **POST/transfer** - **valid sender_id and reciever_id and amount without header**
+    - Endpoint  - /transfer
+    - HTTP method - POST
+    - Pre-conditions -
+    - steps  - {”from” : <sender_id>, “to” : <reciever-id>,  “amount’ : <valid-amount>}
+    - expected result -  401 unauthorized access, JSON with msg
+
+- **Test-10**:
+    - **POST/fund** - **invalid sender_id with valid reciever, amount and header**
+    - Endpoint  - /transfer
+    - HTTP method - POST
+    - Pre-conditions - “X-API-key” in header
+    - steps  - {”from” : <invalid sender_id>, “to” : <reciever-id>,  “amount’ : <valid-amount>}
+    - expected result -  404 User Not Found, JSON with msg
+    
+- **Test-11**:
+    - **POST/fund** - **invalid reciever_id with valid sender, amount and header**
+    - Endpoint  - /transfer
+    - HTTP method - POST
+    - Pre-conditions - “X-API-key” in header
+    - steps  - {”from” : <sender_id>, “to” : <invalid reciever-id>,  “amount’ : <valid-amount>}
+    - expected result -  404 User Not Found, JSON with msg
+    
+- **Test-12**:
+    - **POST/fund** - **invalid amount with valid reciever, sender and header**
+    - Endpoint  - /transfer
+    - HTTP method - POST
+    - Pre-conditions - “X-API-key” in header
+    - steps  - {”from” : <valid sender_id>, “to” : < valid reciever-id>,  “amount’ : <invalid-amount( ≤ 0 )>}
+    - expected result -  400 Bad request, JSON with msg
+
+- **Test-13**:
+    - **POST/fund** - **same id used as sender and reciever with valid amount and header**
+    - Endpoint  - /transfer
+    - HTTP method - POST
+    - Pre-conditions - “X-API-key” in header
+    - steps  - {”from” : <same id>, “to” : < same id>,  “amount’ : <invalid-amount( ≤ 0 )>}
+    - expected result -  400 Bad request, JSON with msg
+    
+- **Test-14**:
+    - **POST/fund** - interrupted transaction
+    - Endpoint  - /transfer
+    - HTTP method - POST
+    - Pre-conditions - “X-API-key” in header
+    - steps  - {”from” : <valid sender_id>, “to” : < valid reciever_ id>,  “amount’ : <valid-amount}
+    - expected result -  500 Internal server error , JSON with msg
