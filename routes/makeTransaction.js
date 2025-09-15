@@ -4,7 +4,8 @@ import { userCollection, ledgerEntry, date, idempotency} from '../middleware/db.
 const makeTransaction = async(req, res) => {
         let req_data = await idempotency.findOne({transactionId: req.requestId, serviced : true});
         if(req_data){
-            return res.status(200).json(req_data);
+            await idempotency.findOneAndDelete({transactionId : req.requestId, serviced : false});
+            return res.status(200).json(req_data.response);
         }
         let from = new ObjectId(req.body.from);
         let to  = new ObjectId(req.body.to);
@@ -48,7 +49,12 @@ const makeTransaction = async(req, res) => {
             });
         }
         
-        await idempotency.findOneAndUpdate({transactionId : req.requestId, serviced : false}, {$set : {serviced : true}});
+        await idempotency.findOneAndUpdate({transactionId : req.requestId, serviced : false}, {$set : {serviced : true, response : {
+            from : from,
+            To: to,
+            amount : amount,
+            date : `${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`
+        } }});
         
         await ledgerEntry.insertOne({
             from : from,
