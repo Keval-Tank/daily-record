@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { userCollection, ledgerEntry, date } from '../middleware/db.js';
+import { userCollection, ledgerEntry, now } from '../middleware/db.js';
 import { states } from '../middleware/requestId.js';
 
 export const makeTransaction = async (req, res) => {
@@ -65,7 +65,7 @@ export const makeTransaction = async (req, res) => {
         from: from,
         To: to,
         amount: amount,
-        creationTime: `${date.getDate()}-${date.getMonth()}-${date.getFullYear()} -- ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+        creationTime: `${now.getDate()}-${now.getMonth()}-${now.getFullYear()} -- ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`
     });
 }
 

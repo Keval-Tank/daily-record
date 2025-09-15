@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { userCollection, ledgerEntry, date } from '../middleware/db.js';
+import { userCollection, ledgerEntry, now } from '../middleware/db.js';
 
 export const addFund = async(req, res) => {
         let amount = req.body.amount;
@@ -19,12 +19,12 @@ export const addFund = async(req, res) => {
         await userCollection.findOneAndUpdate({_id : id},
             {$set: {balance : new_balance}}
         );
-        await ledgerEntry.insertOne({
-            from : id,
-            To: id,
-            amount : parseInt(amount),
-            date : `${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`
-        });
+        // await ledgerEntry.insertOne({
+        //     from : id,
+        //     To: id,
+        //     amount : parseInt(amount),
+        //     date : `${now.getDate()}-${now.getMonth()}-${now.getFullYear()}`
+        // });
         res.status(200).json({
             id : id,
             balance : new_balance,

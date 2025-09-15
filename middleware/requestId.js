@@ -1,4 +1,4 @@
-import { ledgerEntry, date} from './db.js'
+import { ledgerEntry, now} from './db.js'
 import {v4} from 'uuid';
 export let states = Object.freeze(['Pending', 'Cancelled', 'Done']);
 
@@ -10,7 +10,7 @@ export async function addRequestId(req, res, next) {
             sender : req.body.from,
             reciever : req.body.to,
             amount : parseInt(req.body.amount),
-            createdOn : `${date.getDate()}-${date.getMonth()}-${date.getFullYear()} -- ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`,
+            createdOn : `${now.getDate()}-${now.getMonth()}-${now.getFullYear()} -- ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`,
             state : states[0]
         });
     }
