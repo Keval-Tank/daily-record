@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { userCollection, ledgerEntry, date, idempotency} from '../middleware/db.js';
 
-const makeTransaction = async(req, res) => {
+export const makeTransaction = async(req, res) => {
         let req_data = await idempotency.findOne({transactionId: req.requestId, serviced : true});
         if(req_data){
             await idempotency.findOneAndDelete({transactionId : req.requestId, serviced : false});
@@ -71,4 +71,4 @@ const makeTransaction = async(req, res) => {
         });
     }
 
-export default makeTransaction;
+// export default makeTransaction;

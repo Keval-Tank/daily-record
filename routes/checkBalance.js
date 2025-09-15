@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { userCollection } from '../middleware/db.js';
 
-const checkBalance = async(req, res) => {
+export const checkBalance = async(req, res) => {
         let id = new ObjectId(req.params.uid);
         let user_data = await userCollection.findOne({_id : id});
         if(!user_data){
@@ -15,4 +15,4 @@ const checkBalance = async(req, res) => {
         })
     }
 
-export default checkBalance;
+// export default checkBalance;

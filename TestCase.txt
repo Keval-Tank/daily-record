@@ -145,3 +145,12 @@
     - Pre-conditions - “X-API-key” in header
     - steps  - {”from” : <valid sender_id>, “to” : < valid reciever_ id>,  “amount’ : <valid-amount}
     - expected result -  500 Internal server error , JSON with msg
+
+- **Test-15**:
+    - **POST/fund** - usage of same transaction Id
+    - Endpoint  - /transfer
+    - HTTP method - POST
+    - Pre-conditions - “X-API-key” in header
+    - steps  - {”from” : <valid sender_id>, “to” : < valid reciever_ id>,  “amount’ : <valid-amount}
+    - expected result -  500 Internal server error , JSON with msg
+

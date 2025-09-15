@@ -1,5 +1,5 @@
 import {userCollection, date} from '../middleware/db.js'
-const createPost =  async(req, res) => {
+export const createPost =  async(req, res) => {
         let user = req.body;
         if(user.name === ""){
             return res.status(400).json({
@@ -19,4 +19,4 @@ const createPost =  async(req, res) => {
         });
     }
 
-export default createPost;
+// export default createPost;

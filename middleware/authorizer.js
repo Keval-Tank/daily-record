@@ -1,4 +1,4 @@
-const authorizer = (req, res, next) => {
+export const authorizer = (req, res, next) => {
     let auth = false;
         for(let i in req.headers){
             if(i === 'x-api-key'){
@@ -13,4 +13,4 @@ const authorizer = (req, res, next) => {
         next();
 }
 
-export default authorizer
+// export default authorizer

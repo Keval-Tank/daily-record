@@ -1,7 +1,7 @@
 import { idempotency } from './db.js'
 import {v4} from 'uuid';
 
-async function addRequestId(req, res, next) {
+export async function addRequestId(req, res, next) {
     if (req.originalUrl === '/transfer') {
         req.requestId = v4();
         await idempotency.insertOne({
@@ -13,4 +13,4 @@ async function addRequestId(req, res, next) {
     next();
 }
 
-export default addRequestId;
+// export default addRequestId;

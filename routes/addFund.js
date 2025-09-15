@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { userCollection, ledgerEntry, date } from '../middleware/db.js';
 
-const addFund = async(req, res) => {
+export const addFund = async(req, res) => {
         let amount = req.body.amount;
         if(amount <= 0){
             return res.status(400).json({
@@ -31,4 +31,3 @@ const addFund = async(req, res) => {
         });
     }
 
-export default addFund;
