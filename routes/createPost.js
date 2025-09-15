@@ -1,4 +1,4 @@
-import {userCollection, date} from '../middleware/db.js'
+import {userCollection, now} from '../middleware/db.js'
 export const createPost =  async(req, res) => {
         let user = req.body;
         if(user.name === ""){
@@ -9,13 +9,13 @@ export const createPost =  async(req, res) => {
         let data = await userCollection.insertOne({
             name : user.name,
             balance : 0,
-            createdOn : `${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`
+            createdOn : `${now.getDate()}-${now.getMonth()}-${now.getFullYear()}`
         });
         res.status(201).send({
             id : data.insertedId,
             name : user.name,
             balance : 0,
-            createdOn : `${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`
+            createdOn : `${now.getDate()}-${now.getMonth()}-${now.getFullYear()}`
         });
     }
 
