@@ -1,11 +1,5 @@
 import express from 'express';
 import {createPost, checkBalance, addFund, makeTransaction, authorizer, addRequestId} from './Barrel.js'
-// import createPost from './routes/createPost.js';
-// import checkBalance from './routes/checkBalance.js';
-// import addFund from './routes/addFund.js';
-// import makeTransaction from './routes/makeTransaction.js'
-// import authorizer from './middleware/authorizer.js';
-// import addRequestId from './middleware/requestId.js';
 
 let app = express();
 const PORT = process.env.PORT;

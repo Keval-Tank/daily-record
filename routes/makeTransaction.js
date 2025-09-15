@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { userCollection, ledgerEntry, date, idempotency} from '../middleware/db.js';
+import { userCollection, ledgerEntry, date} from '../middleware/db.js';
 
 export const makeTransaction = async(req, res) => {
         let req_data = await idempotency.findOne({transactionId: req.requestId, serviced : true});
