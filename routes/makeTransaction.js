@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { userCollection, ledgerEntry, date } from '../middleware/db.js';
-import { states } from '../Barrel.js';
+import { states } from '../middleware/requestId.js';
 
 export const makeTransaction = async (req, res) => {
     let from = new ObjectId(req.body.from);
@@ -28,13 +28,14 @@ export const makeTransaction = async (req, res) => {
             "msg": "Insufficient Balance"
         });
     }
-    let request_data = await ledgerEntry.findOne({ transactionId: req.requestId, state: 'Done' });
+    let request_data = await ledgerEntry.findOne({ transactionId: req.requestId, state: states[2] });
     if (request_data) {
-        res.json({
-            status: states[2],
+        await ledgerEntry.deleteOne({transactionId : req.requestId, state : states[0]});
+        return res.json({
+            status: request_data.state,
             from: from,
             To: to,
-            amount: amount,
+            amount: request_data.amount,
             creationTime: `${date.getDate()}-${date.getMonth()}-${date.getFullYear()} -- ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
         })
     }
@@ -59,7 +60,7 @@ export const makeTransaction = async (req, res) => {
 
     await ledgerEntry.updateOne({ transactionId: req.requestId }, { $set: { state: states[2] } });
 
-    res.status(200).json({
+    return res.status(200).json({
         status: states[2],
         from: from,
         To: to,

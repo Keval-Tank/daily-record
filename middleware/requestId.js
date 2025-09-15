@@ -9,7 +9,7 @@ export async function addRequestId(req, res, next) {
             transactionId : req.requestId,
             sender : req.body.from,
             reciever : req.body.to,
-            amount : req.body.amount,
+            amount : parseInt(req.body.amount),
             createdOn : `${date.getDate()}-${date.getMonth()}-${date.getFullYear()} -- ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`,
             state : states[0]
         });
