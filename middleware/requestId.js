@@ -10,7 +10,7 @@ export async function addRequestId(req, res, next) {
             sender : req.body.from,
             reciever : req.body.to,
             amount : parseInt(req.body.amount),
-            createdOn : `${now.getDate()}-${now.getMonth()}-${now.getFullYear()} -- ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`,
+            createdOn : `${now.getDate().toString().padStart(2,'0')}-${now.getMonth().toString().padStart(2, '0')}-${now.getFullYear().toString().padStart(2,'0')} -- ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`,
             state : states[0]
         });
     }

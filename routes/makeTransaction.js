@@ -33,10 +33,10 @@ export const makeTransaction = async (req, res) => {
         await ledgerEntry.deleteOne({transactionId : req.requestId, state : states[0]});
         return res.json({
             status: request_data.state,
-            from: from,
-            To: to,
+            sender: from,
+            reciever: to,
             amount: request_data.amount,
-            creationTime: `${date.getDate()}-${date.getMonth()}-${date.getFullYear()} -- ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+            creationTime: `${now.getDate().toString().padStart(2,'0')}-${now.getMonth().toString().padStart(2, '0')}-${now.getFullYear().toString().padStart(2,'0')} -- ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2, '0')}`
         })
     }
     let credit = parseInt(from_data.balance) - amount;
@@ -62,10 +62,10 @@ export const makeTransaction = async (req, res) => {
 
     return res.status(200).json({
         status: states[2],
-        from: from,
-        To: to,
+        sender: from,
+        reciever: to,
         amount: amount,
-        creationTime: `${now.getDate()}-${now.getMonth()}-${now.getFullYear()} -- ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`
+        creationTime: `${now.getDate().toString().padStart(2,'0')}-${now.getMonth().toString().padStart(2, '0')}-${now.getFullYear().toString().padStart(2,'0')} -- ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`
     });
 }
 
