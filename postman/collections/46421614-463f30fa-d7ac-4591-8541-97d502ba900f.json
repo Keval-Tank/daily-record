@@ -1,0 +1,312 @@
+{
+	"info": {
+		"_postman_id": "46421614-463f30fa-d7ac-4591-8541-97d502ba900f",
+		"name": "WalletAPI",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "localhost:3000/users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "26a6b0b2-bd39-4f8d-b088-6e9d0c0b4ef5",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Check auth header\", function() {\r",
+							"    pm.expect(pm.request.headers.has('x-api-key')).to.be.true;\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Validate output schema\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.name).to.eql(pm.request.body.urlencoded.toObject().name);\r",
+							"    pm.expect(jsonData.id).to.have.lengthOf(24);\r",
+							"    pm.expect(jsonData.balance).to.be.a('number');\r",
+							"    pm.expect(jsonData.createdOn).to.be.a('string');\r",
+							"    pm.expect(jsonData.createdOn).to.have.length(22);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "46421614-9d4307ea-f47f-4793-8fd2-c9f0a7001d91",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-API-key",
+						"value": "\"secret\"",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "name",
+							"value": "Preet",
+							"type": "text",
+							"uuid": "31fe6a96-afd7-45a1-a1b0-6a8f10a06553"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:3000/users",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3000/balance/:user_id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e40466d3-ecc1-4be8-a2d6-70a6dec4167c",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Check for Header\", function() {\r",
+							"    pm.expect(pm.request.headers.has('X-API-key')).to.be.true;\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Validate output schema\", function() {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.id).to.have.length(24);\r",
+							"    pm.expect(jsonData.balance).to.be.a('number');\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "46421614-a1d2c457-56f1-4c0d-995c-15ab2c991194",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-API-key",
+						"value": "secret",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:3000/balance/68c9053d22e08b1c5e42e2a2",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"balance",
+						"68c9053d22e08b1c5e42e2a2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3000/fund",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "10825205-5c31-425a-9d8e-83d0dfe09a26",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Check for auth header\", function() {\r",
+							"    pm.expect(pm.request.headers.has('X-API-key')).to.be.true;\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Validate output schema\", function() {\r",
+							"    let jsonData = pm.response.json()\r",
+							"    pm.expect(jsonData.id).to.have.lengthOf(24);\r",
+							"    pm.expect(jsonData.balance).to.be.a('number');\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "46421614-079caebc-6ef0-417e-9fb1-f95f859066ea",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-API-key",
+						"value": "secret",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "id",
+							"value": "68c910b289b7301b529659b5",
+							"type": "text",
+							"uuid": "21e4a363-d453-457e-9653-f844834f2dfd"
+						},
+						{
+							"key": "amount",
+							"value": "5000",
+							"type": "text",
+							"uuid": "8bb359fa-ff5c-45e8-a1c3-4e98be72baee"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:3000/fund",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"fund"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:3000/transfer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "14fad015-2a2c-4a23-967c-941b62ca19f3",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Check auth header\", function () {\r",
+							"    pm.expect(pm.request.headers.has('X-API-key')).to.be.true;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate Output schema\", function() {\r",
+							"    let resData = pm.response.json();\r",
+							"    if(pm.response.code === 200){\r",
+							"        pm.expect(resData.status).to.be.oneOf([\"Pending\", \"Cancelled\", \"Done\"]);\r",
+							"        pm.expect(resData.sender).to.have.lengthOf(24);\r",
+							"        pm.expect(resData.reciever).to.have.lengthOf(24);\r",
+							"        pm.expect(resData.amount).to.be.a('number')\r",
+							"        pm.expect(resData.creationTime).to.have.lengthOf(22)\r",
+							"    }else if(pm.response.code === 500){\r",
+							"        pm.expect(resData.status).to.be.oneOf([\"Pending\", \"Cancelled\", \"Done\"]);\r",
+							"        pm.expect(resData.msg).to.be.a('string');\r",
+							"    }\r",
+							"})\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"id": "46421614-03302e32-6a8e-4129-a6e4-84405028e9c1",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-API-key",
+						"value": "secret",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "from",
+							"value": "68c910b289b7301b529659b5",
+							"type": "text",
+							"uuid": "5b129e98-f404-4968-afce-eb0403b24379"
+						},
+						{
+							"key": "to",
+							"value": "68c9072322e08b1c5e42e2a3",
+							"type": "text",
+							"uuid": "856cd5dc-9450-400e-a6fa-f196eab8942a"
+						},
+						{
+							"key": "amount",
+							"value": "20",
+							"type": "text",
+							"uuid": "cdb325ff-a403-4577-954b-00bd93436305"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:3000/transfer",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"transfer"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "d848dff1-fd8b-4aaf-9993-8e5fbe8fdf42",
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "05c12dcf-5c21-413c-85c4-531ee38cb563",
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
