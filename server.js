@@ -8,6 +8,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(addRequestId);
 
+app.get('/api', (req, res) => {
+    res.send(hello)
+})
+
 app.post('/api/users', authorizer, createPost);
 
 app.get('/api/balance/:uid', authorizer, checkBalance);
