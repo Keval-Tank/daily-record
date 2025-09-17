@@ -4,7 +4,7 @@ describe('for balance route', () => {
         let user_name = "Kabir"
         cy.request({
             method: 'POST',
-            url: 'http://localhost:3000/users',
+            url: '/users',
             headers: {
                 'X-API-key': 'secret'
             },

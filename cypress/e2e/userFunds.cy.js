@@ -4,7 +4,7 @@ describe('Add funds to user account', () => {
         let user_name = "Preet"
         cy.request({
             method: 'POST',
-            url: 'http://localhost:3000/users',
+            url: '/users',
             headers: {
                 'X-API-key': 'secret'
             },
@@ -28,7 +28,7 @@ describe('Add funds to user account', () => {
             // add fund
             cy.request({
                 method : 'POST',
-                url : 'http://localhost:3000/fund',
+                url : '/fund',
                 headers:{
                     'X-API-key' : 'secret'
                 },
