@@ -7,9 +7,6 @@ const PORT = process.env.PORT;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(addRequestId);
-app.get('/', (req, res) => {
-    res.send('Hello world');
-})
 
 app.post('/users', authorizer, createPost);
 
