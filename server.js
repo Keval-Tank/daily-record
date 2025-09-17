@@ -9,7 +9,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(addRequestId);
 
 app.get('/api', (req, res) => {
-    res.send(hello)
+    res.redirect('http://localhost:3000/transfer');
 })
 
 app.post('/api/users', authorizer, createPost);
