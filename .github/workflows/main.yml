@@ -22,3 +22,4 @@ jobs:
         with:
           browser: chrome   # optional
           config-file: cypress.config.js
+          headless: true
