@@ -11,6 +11,10 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+      
+      - name: Install Chrome deps
+        run: sudo apt-get update && sudo apt-get install -y \xvfb libgtk-3-0 libnss3 libasound2
+
 
       - name: Start server
         run: npm start &
