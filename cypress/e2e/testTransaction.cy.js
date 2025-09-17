@@ -5,7 +5,7 @@ describe('For testing transaction', () => {
         let user2 = "Karan"
         cy.request({
             method: 'POST',
-            url: 'http://localhost:3000/users',
+            url: '/users',
             headers: {
                 'X-API-key': 'secret'
             },
@@ -27,7 +27,7 @@ describe('For testing transaction', () => {
             //create user 2
             cy.request({
                 method: 'POST',
-                url: 'http://localhost:3000/users',
+                url: '/users',
                 headers: {
                     'X-API-key': 'secret'
                 },
@@ -53,7 +53,7 @@ describe('For testing transaction', () => {
                 let amount2 = 5000
                 cy.request({
                     method: 'POST',
-                    url: 'http://localhost:3000/fund',
+                    url: '/fund',
                     headers: {
                         'X-API-key': 'secret'
                     },
@@ -72,7 +72,7 @@ describe('For testing transaction', () => {
                     // for user1
                     cy.request({
                         method: 'GET',
-                        url: `http://localhost:3000/balance/${user_1_id}`,
+                        url: `/balance/${user_1_id}`,
                         headers: {
                             'X-API-key': 'secret'
                         }
@@ -84,7 +84,7 @@ describe('For testing transaction', () => {
                         // add funds in user 2
                         cy.request({
                             method: 'POST',
-                            url: 'http://localhost:3000/fund',
+                            url: '/fund',
                             headers: {
                                 'X-API-key': 'secret'
                             },
@@ -102,7 +102,7 @@ describe('For testing transaction', () => {
                             // for user2
                             cy.request({
                                 method: 'GET',
-                                url: `http://localhost:3000/balance/${user_2_id}`,
+                                url: `/balance/${user_2_id}`,
                                 headers: {
                                     'X-API-key': 'secret'
                                 }
@@ -112,12 +112,12 @@ describe('For testing transaction', () => {
                                 expect(response.body.balance).to.eq(new_2_balance)
 
                                 // transaction between 1 and 2
-                                let transfer_amount = 80;
+                                let transfer_amount = 35;
                                 let sender = { id: user_2_id, balance: new_2_balance }
                                 let reciever = { id: user_1_id, balance: new_1_balance }
                                 cy.request({
                                     method: 'POST',
-                                    url: 'http://localhost:3000/transfer',
+                                    url: '/transfer',
                                     headers: {
                                         'X-API-key': 'secret'
                                     },
@@ -141,7 +141,7 @@ describe('For testing transaction', () => {
                                     let credit = sender.balance - transfer_amount
                                     cy.request({
                                         method: 'GET',
-                                        url: `http://localhost:3000/balance/${sender.id}`,
+                                        url: `/balance/${sender.id}`,
                                         headers: {
                                             'X-API-key': 'secret'
                                         }
@@ -155,7 +155,7 @@ describe('For testing transaction', () => {
                                     let debit = reciever.balance + transfer_amount
                                     cy.request({
                                         method: 'GET',
-                                        url: `http://localhost:3000/balance/${reciever.id}`,
+                                        url: `/balance/${reciever.id}`,
                                         headers: {
                                             'X-API-key': 'secret'
                                         }

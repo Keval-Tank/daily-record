@@ -45,7 +45,7 @@ describe('Add funds to user account', () => {
                 // check from balance route
                 cy.request({
                     method : 'GET',
-                    url : `http://localhost:3000/balance/${user_id}`,
+                    url : `/balance/${user_id}`,
                     headers : {
                         'X-API-key' : 'secret'
                     }

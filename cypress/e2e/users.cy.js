@@ -10,7 +10,7 @@ describe('For testing user route', () => {
     let user_name = 'Keval'
     cy.request({
       method : 'POST',
-      url : 'http://localhost:3000/users',
+      url : '/users',
       headers : {
         'X-API-Key' : 'secret'
       },
@@ -26,6 +26,7 @@ describe('For testing user route', () => {
       expect(response.body.balance).to.be.least(0)
       expect(response.body.createdOn).to.be.a('string')
       expect(response.body.createdOn.length).to.be.eq(22)
+    
     })
   })
 
