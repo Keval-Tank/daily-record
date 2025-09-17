@@ -6,17 +6,26 @@ describe('For testing user route', () => {
   //   })
   // })
 
-  it("Return balance of a user", () => {
+  it("Create a new user", () => {
+    let user_name = 'Keval'
     cy.request({
-      method : 'GET',
-      url : '/balance/68c936fa36fc7585ba1de2e3',
+      method : 'POST',
+      url : '/users',
       headers : {
         'X-API-Key' : 'secret'
+      },
+      body:{
+        'name' : user_name
       }
     }).should((response) => {
-      expect(response.status).to.eq(200);
-      expect(response.body.id).to.eq('68c936fa36fc7585ba1de2e3');
+      expect(response.status).to.eq(201);
+      expect(response.body.id).to.be.a('string')
+      expect(response.body.id.length).to.eq(24)
+      expect(response.body.name).to.eq(user_name)
       expect(response.body.balance).to.be.a('number')
+      expect(response.body.balance).to.be.least(0)
+      expect(response.body.createdOn).to.be.a('string')
+      expect(response.body.createdOn.length).to.be.eq(22)
     })
   })
 
