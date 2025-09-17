@@ -12,8 +12,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
       
-      - name: Start server and run
-        run: npx start-server-and-test "npm run dev" http://localhost:3000 "npx cypress run"
+      - name: Start server
+        run: npm start &
         # Or: npm run dev &
         # The "&" keeps it running in background
         
