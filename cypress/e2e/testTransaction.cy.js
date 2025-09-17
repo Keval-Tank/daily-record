@@ -112,7 +112,7 @@ describe('For testing transaction', () => {
                                 expect(response.body.balance).to.eq(new_2_balance)
 
                                 // transaction between 1 and 2
-                                let transfer_amount = 999999999;
+                                let transfer_amount = 80;
                                 let sender = { id: user_2_id, balance: new_2_balance }
                                 let reciever = { id: user_1_id, balance: new_1_balance }
                                 cy.request({
