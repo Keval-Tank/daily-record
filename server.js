@@ -8,13 +8,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(addRequestId);
 
-app.post('/users', authorizer, createPost);
+app.post('/api/users', authorizer, createPost);
 
-app.get('/balance/:uid', authorizer, checkBalance);
+app.get('/api/balance/:uid', authorizer, checkBalance);
 
-app.post('/fund', authorizer, addFund);
+app.post('/api/fund', authorizer, addFund);
 
-app.post('/transfer', authorizer, makeTransaction);
+app.post('/api/transfer', authorizer, makeTransaction);
 
 app.listen(PORT, () => console.log(`Server is runnig on port ${PORT}`));
 
