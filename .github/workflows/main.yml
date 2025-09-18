@@ -5,17 +5,14 @@ on: push
 jobs:
   cypress-run:
     runs-on: ubuntu-24.04
+    services:
+      mongo:
+        image: mongo:6
+        ports:
+          - 27017:27017
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Install MongoDB
-        run: 
-          sudo apt-get update
-          sudo apt-get install -y mongodb
-      
-      - name: Start Mongodb
-        run: sudo systemctl start mongodb
 
       - name: Install dependencies
         run: npm ci
@@ -27,7 +24,7 @@ jobs:
         
       - name: Cypress run
         uses: cypress-io/github-action@v6
-        with:
-          browser: chrome   # optional
-          config-file: cypress.config.js
+    env:
+      MONGODB_URI: mongodb://localhost:27017/WalletAPI
+          
     
