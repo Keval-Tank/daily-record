@@ -5,6 +5,9 @@ on: push
 jobs:
   cypress-run:
     runs-on: ubuntu-24.04
+    env:
+      MONGODB_URI: mongodb://localhost:27017/WalletAPI
+      PORT: ${{vars.PORT}}
     services:
       mongo:
         image: mongo:6
@@ -20,11 +23,9 @@ jobs:
       - name: Start server & wait
         run: 
           npm start &
-          npx wait-on http://127.0.0.1:3000/api/users
+          npx wait-on http://127.0.0.1:$PORT/api/users
         
       - name: Cypress run
         uses: cypress-io/github-action@v6
-    env:
-      MONGODB_URI: mongodb://localhost:27017/WalletAPI
-          
+      
     
