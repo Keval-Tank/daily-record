@@ -6,7 +6,7 @@ jobs:
   cypress-run:
     runs-on: ubuntu-24.04
     env:
-      MONGODB_URI: mongodb://localhost:27017/WalletAPI
+      # MONGODB_URI: mongodb://localhost:27017/WalletAPI
       PORT: ${{vars.PORT}}
     services:
       mongo:
