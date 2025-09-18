@@ -1,7 +1,7 @@
 describe('Add funds to user account', () => {
     it("Add fund in user account and verify it", () => {
         // create user
-        let user_name = "Preet"
+        let user_name = "Kaushik"
         cy.request({
             method: 'POST',
             url: '/users',
