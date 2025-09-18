@@ -11,11 +11,11 @@ jobs:
     env:
       # MONGODB_URI: mongodb://localhost:27017/WalletAPI
       PORT: ${{vars.PORT}}
-    # services:
-    #   mongo:
-    #     image: mongo:6
-    #     ports:
-    #       - 27017:27017
+    services:
+      mongo:
+        image: mongo:6
+        ports:
+          - 27017:27017
     steps:
       - name: Checkout
         uses: actions/checkout@v4
