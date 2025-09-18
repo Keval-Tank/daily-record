@@ -10,7 +10,7 @@ describe('For testing user route', () => {
     let user_name = 'Keval'
     cy.request({
       method : 'POST',
-      url : 'http://localhost:3000/api/users',
+      url : '/users',
       headers : {
         'X-API-Key' : 'secret'
       },
