@@ -23,7 +23,7 @@ jobs:
       - name: Start server & wait
         run: 
           npm start &
-          npx wait-on http://127.0.0.1:$PORT/api/users
+          npx wait-on http://127.0.0.1:3000/api/users
         
       - name: Cypress run
         uses: cypress-io/github-action@v6
