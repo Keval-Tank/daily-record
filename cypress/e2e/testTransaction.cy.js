@@ -1,7 +1,7 @@
 describe('For testing transaction', () => {
     it('Create Users and make a proper transaction between them', () => {
         // create users 1
-        let user1 = "Keval"
+        let user1 = "Kabir"
         let user2 = "Karan"
         cy.request({
             method: 'POST',
