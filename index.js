@@ -61,7 +61,7 @@ const authenticator = (req, res, next) => {
         })
     } catch (error) {
         return res.status(error.statusCode || 500).json({
-            msg : error
+            msg: error
         })
     }
 }
@@ -74,23 +74,49 @@ app.post('/signup', async (req, res) => {
         let result = await prisma.users.create({
             data: { name, password }
         })
-        let payload = {
-            id: result.id,
-            password
-        }
-        let access_token = jwt.sign(payload, process.env.SECRET_KEY);
-        req.session.user = result.id;
-        req.session.visited = [req.originalUrl];
-        res.cookie("token", access_token);
         return res.status(201).json({
             "id": result.id,
-            "name": name,
-            "balance": result.balance,
-            "createdOn": result.createdOn
+            "name": name
         });
     } catch (error) {
         return res.status(500).json({
             "msg": error.message
+        })
+    }
+})
+
+//login
+app.post('/login', async (req, res) => {
+    try {
+        let id = parseInt(req.body.id);
+        let password = req.body.password;
+        let user_data = await prisma.users.findFirst({
+            where: {
+                id,
+                password
+            }
+        })
+        if (!user_data) {
+            throw createHttpError(404, "User not found!");
+        }
+        let payload = {
+            id: user_data.id,
+            password
+        }
+        let access_token = jwt.sign(payload, process.env.SECRET_KEY);
+        req.session.user = user_data.id;
+        req.session.visited = [req.originalUrl];
+        res.cookie("token", access_token);
+        res.status(200).json({
+            "id": id,
+            "name": user_data.name,
+            "balance": user_data.balance,
+            "createdOn": user_data.createdOn
+        })
+
+    } catch (error) {
+        return res.status(error.statusCode || 500).json({
+            message: error.message
         })
     }
 })
@@ -222,9 +248,9 @@ app.post('/transfer', authenticator, async (req, res) => {
 // signout
 app.get('/signout', authenticator, (req, res) => {
     req.session.destroy(err => {
-        if(err){
+        if (err) {
             return res.status(500).json({
-                msg :  "Internal server error"
+                msg: "Internal server error"
             })
         }
         res.clearCookie("connect.sid");
