@@ -38,7 +38,7 @@ const authenticator = (req, res, next) => {
             throw createHttpError(401, "Unauthorized")
         }
         req.session.visited.push(req.originalUrl)
-        const token = req.headers['authorization'];
+        const token = req.cookies.token;
         if (token == null || !token) {
             throw createHttpError(401, "Unauthorized")
         }
@@ -81,10 +81,10 @@ app.post('/signup', async (req, res) => {
         let access_token = jwt.sign(payload, process.env.SECRET_KEY);
         req.session.user = result.id;
         req.session.visited = [req.originalUrl];
+        res.cookie("token", access_token);
         return res.status(201).json({
             "id": result.id,
             "name": name,
-            "access-token" : access_token,
             "balance": result.balance,
             "createdOn": result.createdOn
         });
@@ -94,21 +94,6 @@ app.post('/signup', async (req, res) => {
         })
     }
 })
-
-// create user
-// app.post('/user',authenticator, async (req, res) => {
-//     try {
-//         const name = req.body.name;
-//         let result = await prisma.users.create({
-//             data: { name }
-//         })
-//         return res.status(201).json(result);
-//     } catch (error) {
-//         return res.status(500).json({
-//             "msg": error.message
-//         })
-//     }
-// })
 
 // get balance
 app.get('/balance', authenticator, async (req, res) => {
@@ -236,9 +221,17 @@ app.post('/transfer', authenticator, async (req, res) => {
 
 // signout
 app.get('/signout', authenticator, (req, res) => {
-    req.headers['authorization'] = '';
-    res.status(200).json({
-        "msg": "You've logged out"
+    req.session.destroy(err => {
+        if(err){
+            return res.status(500).json({
+                msg :  "Internal server error"
+            })
+        }
+        res.clearCookie("connect.sid");
+        res.clearCookie("token");
+        res.json({
+            "msg": "You've logged out"
+        })
     })
 })
 
