@@ -14,7 +14,7 @@ const PORT = process.env.PORT;
 const prisma = new PrismaClient();
 await mongoose.connect("mongodb://127.0.0.1:27017/sessions");
 
-app.use(express.json())
+app.use(express.json({ type: ['application/json', 'application/vnd.api+json'] }))
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 //setup session
@@ -69,18 +69,26 @@ const authenticator = (req, res, next) => {
 //signup
 app.post('/signup', async (req, res) => {
     try {
-        const name = req.body.name;
-        const password = req.body.password
+        console.log(req.body.data)
+        const name = req.body.data.attributes.name;
+        const password = req.body.data.attributes.password;
         let result = await prisma.users.create({
             data: { name, password }
         })
         return res.status(201).json({
-            "id": result.id,
-            "name": name
+            "data": {
+                "type": "user",
+                "attributes": {
+                    "id": result.id,
+                    "name": name
+                }
+            }
         });
     } catch (error) {
         return res.status(500).json({
-            "msg": error.message
+            "error": {
+                "msg": error.message
+            }
         })
     }
 })
@@ -88,8 +96,8 @@ app.post('/signup', async (req, res) => {
 //login
 app.post('/login', async (req, res) => {
     try {
-        let id = parseInt(req.body.id);
-        let password = req.body.password;
+        let id = parseInt(req.body.data.attributes.id);
+        let password = req.body.data.attributes.password;
         let user_data = await prisma.users.findFirst({
             where: {
                 id,
@@ -108,15 +116,22 @@ app.post('/login', async (req, res) => {
         req.session.visited = [req.originalUrl];
         res.cookie("token", access_token);
         res.status(200).json({
-            "id": id,
-            "name": user_data.name,
-            "balance": user_data.balance,
-            "createdOn": user_data.createdOn
+            "data": {
+                "type": "user",
+                "attributes": {
+                    "id": user_data.id,
+                    "name": user_data.name,
+                    "balance": user_data.balance,
+                    "createdOn": user_data.createdOn
+                }
+            }
         })
 
     } catch (error) {
         return res.status(error.statusCode || 500).json({
-            message: error.message
+            "error": {
+                "msg": error.message
+            }
         })
     }
 })
@@ -132,12 +147,19 @@ app.get('/balance', authenticator, async (req, res) => {
             throw createHttpError(404, `User with id ${id} was not found`)
         }
         return res.status(200).json({
-            "id": data.id,
-            "balance": data.balance
+            "data": {
+                "type": "user",
+                "attributes": {
+                    "id": data.id,
+                    "balance": data.balance
+                }
+            }
         });
     } catch (error) {
         return res.status(error.statusCode).json({
-            "msg": error.message
+            "error": {
+                "msg": error.message
+            }
         })
     }
 })
@@ -146,7 +168,7 @@ app.get('/balance', authenticator, async (req, res) => {
 app.post('/fund', authenticator, async (req, res) => {
     try {
         const id = parseInt(req.payload.id)
-        const amount = parseInt(req.body.amount)
+        const amount = parseInt(req.body.data.attributes.amount)
         let user_data = await prisma.users.findFirst({
             where: { id }
         })
@@ -162,12 +184,19 @@ app.post('/fund', authenticator, async (req, res) => {
             data: { balance: curr_balance + amount }
         })
         return res.status(200).json({
-            "id": id,
-            "balance": updated_data.balance
+            "data": {
+                "type": "user",
+                "attributes": {
+                    "id": id,
+                    "balance": updated_data.balance
+                }
+            }
         })
     } catch (error) {
         return res.status(error.statusCode || 500).json({
-            "msg": error.message
+            "error": {
+                "msg": error.message
+            }
         })
     }
 })
@@ -176,9 +205,9 @@ app.post('/fund', authenticator, async (req, res) => {
 app.post('/transfer', authenticator, async (req, res) => {
     try {
         let sender_id = parseInt(req.payload.id)
-        let reciever_id = parseInt(req.body.reciever)
+        let reciever_id = parseInt(req.body.data.attributes.reciever)
         let transaction_id = v4();
-        let transfer_amount = parseInt(req.body.amount)
+        let transfer_amount = parseInt(req.body.data.attributes.amount)
         let sender_details = await prisma.users.findFirst({
             where: { id: sender_id }
         })
@@ -201,7 +230,12 @@ app.post('/transfer', authenticator, async (req, res) => {
             }
         })
         if (past_transaction) {
-            return res.status(200).json(past_transaction)
+            return res.status(200).json({
+                "data" : {
+                    "type" : "user",
+                    "attributes" : past_transaction
+                }
+            })
         }
         // create a ledger entry
         await prisma.ledger.create({
@@ -237,10 +271,17 @@ app.post('/transfer', authenticator, async (req, res) => {
         let updated_ledger_entry = await prisma.ledger.findFirst({
             where: { transactionId: transaction_id }
         })
-        return res.status(200).json(updated_ledger_entry);
+        return res.status(200).json({
+            "data" : {
+                "type" : "user",
+                "attributes" : updated_ledger_entry
+            }
+        });
     } catch (error) {
         return res.status(error.statusCode).json({
-            "msg": error.message
+            "error": {
+                "msg": error.message
+            }
         })
     }
 })
@@ -250,13 +291,20 @@ app.get('/signout', authenticator, (req, res) => {
     req.session.destroy(err => {
         if (err) {
             return res.status(500).json({
-                msg: "Internal server error"
+                "error" : {
+                    "msg" : err.message
+                }
             })
         }
         res.clearCookie("connect.sid");
         res.clearCookie("token");
         res.json({
-            "msg": "You've logged out"
+            "data" : {
+                "type" : "user",
+                "attributes" : {
+                    "msg": "You've logged out"
+                }
+            }
         })
     })
 })
