@@ -7,12 +7,13 @@ import session from 'express-session'
 import mongoose from 'mongoose'
 import MongoStore from 'connect-mongo'
 import cookieParser from 'cookie-parser';
-
+import crypto from 'crypto';
 
 const app = express();
 const PORT = process.env.PORT;
 const prisma = new PrismaClient();
 await mongoose.connect("mongodb://127.0.0.1:27017/sessions");
+
 
 app.use(express.json({ type: ['application/json', 'application/vnd.api+json'] }))
 app.use(express.urlencoded({ extended: true }))
@@ -66,10 +67,16 @@ const authenticator = (req, res, next) => {
     }
 }
 
+let lastModified = new Date().toUTCString();
+
+//generateEtag
+function generateEtag(obj){
+    return crypto.createHash("md5").update(obj).digest('hex');
+}
+
 //signup
 app.post('/signup', async (req, res) => {
     try {
-        console.log(req.body.data)
         const name = req.body.data.attributes.name;
         const password = req.body.data.attributes.password;
         let result = await prisma.users.create({
@@ -139,6 +146,13 @@ app.post('/login', async (req, res) => {
 // get balance
 app.get('/balance', authenticator, async (req, res) => {
     try {
+        const etag = generateEtag(process.env.SECRET_KEY)
+        if(req.headers['if-none-match'] === etag){
+            return res.status(304).end();
+        }
+        if(req.headers['last-modified'] === lastModified){
+            return res.status(304).end();
+        }
         const id = parseInt(req.payload.id)
         const data = await prisma.users.findFirst({
             where: { id }
@@ -146,6 +160,9 @@ app.get('/balance', authenticator, async (req, res) => {
         if (!data) {
             throw createHttpError(404, `User with id ${id} was not found`)
         }
+        res.setHeader("Cache-Control", "private, no-cache, max-age=60*60*1000")
+        res.setHeader("Etag", etag)
+        res.setHeader("Last-Modified", lastModified)
         return res.status(200).json({
             "data": {
                 "type": "user",
@@ -183,6 +200,7 @@ app.post('/fund', authenticator, async (req, res) => {
             where: { id },
             data: { balance: curr_balance + amount }
         })
+        lastModified = new Date().toUTCString();
         return res.status(200).json({
             "data": {
                 "type": "user",
@@ -268,6 +286,7 @@ app.post('/transfer', authenticator, async (req, res) => {
                 }
             })
         ])
+        lastModified = new Date().toUTCString();
         let updated_ledger_entry = await prisma.ledger.findFirst({
             where: { transactionId: transaction_id }
         })
@@ -278,7 +297,7 @@ app.post('/transfer', authenticator, async (req, res) => {
             }
         });
     } catch (error) {
-        return res.status(error.statusCode).json({
+        return res.status(error.statusCode || 500).json({
             "error": {
                 "msg": error.message
             }
