@@ -7,6 +7,7 @@ import session from 'express-session'
 import mongoose from 'mongoose'
 import MongoStore from 'connect-mongo'
 import cookieParser from 'cookie-parser';
+import cors from 'cors'
 
 
 const app = express();
@@ -16,6 +17,10 @@ await mongoose.connect("mongodb://127.0.0.1:27017/sessions");
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use(cors({
+    origin: "http://localhost:5501",
+    credentials: true
+}))
 app.use(cookieParser())
 //setup session
 app.use(session({
@@ -35,11 +40,13 @@ app.use(session({
 const authenticator = (req, res, next) => {
     try {
         if (!req.session.user) {
+            console.log(1)
             throw createHttpError(401, "Unauthorized")
         }
         req.session.visited.push(req.originalUrl)
         const token = req.cookies.token;
         if (token == null || !token) {
+            console.log(2)
             throw createHttpError(401, "Unauthorized")
         }
         jwt.verify(token, process.env.SECRET_KEY, async (err, payload) => {
@@ -53,7 +60,7 @@ const authenticator = (req, res, next) => {
                 }
             })
             if (!data || data.password != payload.password) {
-
+                console.log(3)
                 throw createHttpError(401, "Unauthorized")
             }
             req.payload = payload
@@ -61,7 +68,7 @@ const authenticator = (req, res, next) => {
         })
     } catch (error) {
         return res.status(error.statusCode || 500).json({
-            msg: error
+            "msg" : error.message
         })
     }
 }
@@ -106,7 +113,11 @@ app.post('/login', async (req, res) => {
         let access_token = jwt.sign(payload, process.env.SECRET_KEY);
         req.session.user = user_data.id;
         req.session.visited = [req.originalUrl];
-        res.cookie("token", access_token);
+        res.cookie("token", access_token , {
+            httpOnly : true,
+            secure : true,
+            sameSite : "lax"
+        });
         res.status(200).json({
             "id": id,
             "name": user_data.name,
@@ -115,6 +126,7 @@ app.post('/login', async (req, res) => {
         })
 
     } catch (error) {
+        console.log("error" , error)
         return res.status(error.statusCode || 500).json({
             message: error.message
         })
@@ -122,7 +134,7 @@ app.post('/login', async (req, res) => {
 })
 
 // get balance
-app.get('/balance', authenticator, async (req, res) => {
+app.get('/balance/:id', authenticator, async (req, res) => {
     try {
         const id = parseInt(req.payload.id)
         const data = await prisma.users.findFirst({
