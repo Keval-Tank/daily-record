@@ -141,10 +141,14 @@ app.get('/balance/:id', authenticator, async (req, res) => {
                 throw createHttpError(404, `User with id ${id} was not found`)
             }
             let response_to_cache = JSON.stringify({
-                "id" : data.id,
-                "balance" : data.balance
+                "id": data.id,
+                "balance": data.balance
             });
             await redis_client.hSet("user_balance", req.originalUrl, response_to_cache);
+            const ttl = await redis_client.ttl("user_balance")
+            if (ttl === -1) {
+                await redis_client.expire("user_balance", 86400)
+            }
             return res.status(200).json({
                 "id": data.id,
                 "balance": data.balance
@@ -182,6 +186,10 @@ app.post('/fund', authenticator, async (req, res) => {
             "balance": updated_data.balance
         });
         await redis_client.hSet("user_balance", `/balance/${id}`, response_to_cache)
+        const ttl = await redis_client.ttl("user_balance")
+        if (ttl === -1) {
+            await redis_client.expire("user_balance", 86400)
+        }
         return res.status(200).json({
             "id": id,
             "balance": updated_data.balance
@@ -263,16 +271,24 @@ app.post('/transfer', authenticator, async (req, res) => {
         })
         let response_to_cache = JSON.stringify(updated_ledger_entry);
         await redis_client.hSet("ledger_cache", transaction_id, response_to_cache);
+        const ttl1 = await redis_client.ttl("ledger_cache")
+        if (ttl1 === -1) {
+            await redis_client.expire("ledger_cache", 86400)
+        }
         let sender_balance_cache = JSON.stringify({
-            "id" : sender_id,
-            "balance" : sender_balance - transfer_amount
+            "id": sender_id,
+            "balance": sender_balance - transfer_amount
         })
         await redis_client.hSet("user_balance", `/balance/${sender_id}`, sender_balance_cache)
         let reciever_balance_cache = JSON.stringify({
-            "id" : reciever_id,
-            "balance" : reciever_balance + transfer_amount
+            "id": reciever_id,
+            "balance": reciever_balance + transfer_amount
         })
         await redis_client.hSet("user_balance", `/balance/${reciever_id}`, reciever_balance_cache)
+        const ttl2 = await redis_client.ttl("user_balance")
+        if(ttl2 === -1){
+            await redis_client.expire("user_balance", 86400)
+        }
         return res.status(200).json(updated_ledger_entry);
     } catch (error) {
         return res.status(error.statusCode).json({
@@ -289,6 +305,7 @@ app.get('/signout', authenticator, (req, res) => {
                 msg: "Internal server error"
             })
         }
+        redis_client.destroy();
         res.clearCookie("connect.sid");
         res.clearCookie("token");
         res.json({
