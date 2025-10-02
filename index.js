@@ -7,11 +7,14 @@ import session from 'express-session'
 import mongoose from 'mongoose'
 import MongoStore from 'connect-mongo'
 import cookieParser from 'cookie-parser';
+import { createClient } from 'redis';
 
 
 const app = express();
 const PORT = process.env.PORT;
 const prisma = new PrismaClient();
+const redis_client = createClient();
+await redis_client.connect()
 await mongoose.connect("mongodb://127.0.0.1:27017/sessions");
 
 app.use(express.json())
@@ -122,21 +125,34 @@ app.post('/login', async (req, res) => {
 })
 
 // get balance
-app.get('/balance', authenticator, async (req, res) => {
+app.get('/balance/:id', authenticator, async (req, res) => {
     try {
         const id = parseInt(req.payload.id)
-        const data = await prisma.users.findFirst({
-            where: { id }
-        })
-        if (!data) {
-            throw createHttpError(404, `User with id ${id} was not found`)
+        let is_in_cache = await redis_client.hExists("user_balance", req.originalUrl);
+        if (is_in_cache) {
+            let cached_result = await redis_client.hGet("user_balance", req.originalUrl);
+            let response = JSON.parse(cached_result);
+            return res.status(200).json(response);
+        } else {
+            const data = await prisma.users.findFirst({
+                where: { id }
+            })
+            if (!data) {
+                throw createHttpError(404, `User with id ${id} was not found`)
+            }
+            let response_to_cache = JSON.stringify({
+                "id" : data.id,
+                "balance" : data.balance
+            });
+            await redis_client.hSet("user_balance", req.originalUrl, response_to_cache);
+            return res.status(200).json({
+                "id": data.id,
+                "balance": data.balance
+            });
         }
-        return res.status(200).json({
-            "id": data.id,
-            "balance": data.balance
-        });
+
     } catch (error) {
-        return res.status(error.statusCode).json({
+        return res.status(error.statusCode || 500).json({
             "msg": error.message
         })
     }
@@ -146,7 +162,7 @@ app.get('/balance', authenticator, async (req, res) => {
 app.post('/fund', authenticator, async (req, res) => {
     try {
         const id = parseInt(req.payload.id)
-        const amount = parseInt(req.body.amount)
+        const amount = parseInt(req.body.amount);
         let user_data = await prisma.users.findFirst({
             where: { id }
         })
@@ -161,6 +177,11 @@ app.post('/fund', authenticator, async (req, res) => {
             where: { id },
             data: { balance: curr_balance + amount }
         })
+        let response_to_cache = JSON.stringify({
+            "id": id,
+            "balance": updated_data.balance
+        });
+        await redis_client.hSet("user_balance", `/balance/${id}`, response_to_cache)
         return res.status(200).json({
             "id": id,
             "balance": updated_data.balance
@@ -201,9 +222,11 @@ app.post('/transfer', authenticator, async (req, res) => {
             }
         })
         if (past_transaction) {
-            return res.status(200).json(past_transaction)
+            let cache_response = await redis_client.hGet("ledger_cache", transaction_id);
+            let response = JSON.parse(cache_response);
+            return res.status(200).json(response);
         }
-        // create a ledger entry
+        // create a ledger entry with 'Pending' status
         await prisma.ledger.create({
             data: {
                 transactionId: transaction_id,
@@ -234,9 +257,22 @@ app.post('/transfer', authenticator, async (req, res) => {
                 }
             })
         ])
+        // update the existing ledger entry
         let updated_ledger_entry = await prisma.ledger.findFirst({
             where: { transactionId: transaction_id }
         })
+        let response_to_cache = JSON.stringify(updated_ledger_entry);
+        await redis_client.hSet("ledger_cache", transaction_id, response_to_cache);
+        let sender_balance_cache = JSON.stringify({
+            "id" : sender_id,
+            "balance" : sender_balance - transfer_amount
+        })
+        await redis_client.hSet("user_balance", `/balance/${sender_id}`, sender_balance_cache)
+        let reciever_balance_cache = JSON.stringify({
+            "id" : reciever_id,
+            "balance" : reciever_balance + transfer_amount
+        })
+        await redis_client.hSet("user_balance", `/balance/${reciever_id}`, reciever_balance_cache)
         return res.status(200).json(updated_ledger_entry);
     } catch (error) {
         return res.status(error.statusCode).json({
