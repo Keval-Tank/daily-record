@@ -16,14 +16,8 @@ jobs:
      #where to run jobs  
      runs-on : ubuntu-latest
      #use variables and secrets of a repository   
-     env:
-        PORT : ${{vars.PORT}}
-
-    #  services:
-    #     mongo :
-    #         image : mongo:6
-    #         ports : 
-    #             - 27017:27017
+    #  env:
+    #     PORT : ${{vars.PORT}}
 
      #steps to be performed in this job  
      steps:
