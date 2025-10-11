@@ -15,9 +15,6 @@ jobs:
     jest-test:
      #where to run jobs  
      runs-on : ubuntu-latest
-     #use variables and secrets of a repository   
-    #  env:
-    #     PORT : ${{vars.PORT}}
 
      #steps to be performed in this job  
      steps:
