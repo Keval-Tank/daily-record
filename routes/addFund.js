@@ -1,17 +1,19 @@
 import { ObjectId } from 'mongodb';
-import { userCollection, ledgerEntry, now } from '../middleware/db.js';
+import { userCollection} from '../middleware/db.js';
 
-export const addFund = async(req, res) => {
+export async function addFund(req, res){
         let amount = req.body.amount;
-        if(amount <= 0){
-            return res.status(400).json({
-                "message" : "Please enter a valid amount"
+        if(amount <= 0 || req.body.id === ''){
+            res.status(400)
+            return res.json({
+                "message" : "Please enter a valid amount or id"
             })
         }
         let id = new ObjectId(req.body.id);
         let user = await userCollection.findOne({_id : id})
         if(!user){
-            return res.status(404).json({
+            res.status(404)
+            return res.json({
                 "message" : `User with id ${id} was not found!`
             })
         }
@@ -25,7 +27,8 @@ export const addFund = async(req, res) => {
         //     amount : parseInt(amount),
         //     date : `${now.getDate()}-${now.getMonth()}-${now.getFullYear()}`
         // });
-        res.status(200).json({
+        res.status(200)
+        return res.json({
             id : id,
             balance : new_balance,
         });

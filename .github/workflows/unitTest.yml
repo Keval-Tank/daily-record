@@ -1,0 +1,40 @@
+# optional - provide name for workflow
+name : Unit tests
+
+#when to where to trigger it
+on :
+    #trigger on push operation 
+    push:
+      #trigger on push operation on 'main' branch   
+      branches:
+        - main
+
+#jobs to perform in this workflow 
+jobs:
+    #name for job
+    jest-test:
+     #where to run jobs  
+     runs-on : ubuntu-latest
+     #use variables and secrets of a repository   
+     env:
+        PORT : ${{vars.PORT}}
+
+    
+     services:
+        mongo :
+            image : mongo:6
+            ports : 
+                - 27017:27017
+
+     #steps to be performed in this job  
+     steps:
+        - name : Checkout code
+          uses : actions/checkout@v4
+
+        - name : Install dependencies
+          run : npm ci
+          
+        - name : Run jest tests
+          run : |
+            npm install
+            npm test 

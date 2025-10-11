@@ -1,8 +1,9 @@
 import {userCollection, now} from '../middleware/db.js'
-export const createPost =  async(req, res) => {
+export async function createUser(req, res){
         let user = req.body;
         if(user.name === ""){
-            return res.status(400).json({
+            res.status(400);
+            return res.json({
                 "msg": "Please enter a valid name to create account"
             });
         }
@@ -11,7 +12,8 @@ export const createPost =  async(req, res) => {
             balance : 0,
             createdOn : `${now.getDate().toString().padStart(2,'0')}-${now.getMonth().toString().padStart(2, '0')}-${now.getFullYear().toString().padStart(2,'0')} -- ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`
         });
-        res.status(201).send({
+        res.status(201)
+        res.send({
             id : data.insertedId,
             name : user.name,
             balance : 0,

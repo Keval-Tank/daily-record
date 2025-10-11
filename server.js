@@ -1,5 +1,5 @@
 import express from 'express';
-import {createPost, checkBalance, addFund, makeTransaction, authorizer, addRequestId} from './Barrel.js'
+import {createUser, checkBalance, addFund, makeTransaction, authorizer, addRequestId} from './Barrel.js'
 
 let app = express();
 const PORT = process.env.PORT;
@@ -12,7 +12,7 @@ app.get('/api', (req, res) => {
     res.end();
 })
 
-app.post('/api/users', authorizer, createPost);
+app.post('/api/users', authorizer, createUser);
 
 app.get('/api/balance/:uid', authorizer, checkBalance);
 

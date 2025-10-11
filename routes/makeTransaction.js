@@ -2,35 +2,40 @@ import { ObjectId } from 'mongodb';
 import { userCollection, ledgerEntry, now } from '../middleware/db.js';
 import { states } from '../middleware/requestId.js';
 
-export const makeTransaction = async (req, res) => {
+export async function makeTransaction(req, res){
     let from = new ObjectId(req.body.from);
     let to = new ObjectId(req.body.to);
     let amount = parseInt(req.body.amount);
     let from_data = await userCollection.findOne({ _id: from });
     let to_data = await userCollection.findOne({ _id: to });
-    if (from.toString() === to.toString()) {
-        return res.status(400).json({
+    if (from.toString() === to.toString() || req.body.from === "" || req.body.to === ""){
+        res.status(400)
+        return res.json({
             "msg": "Bad request"
         });
     }
-    if ((!from_data || !to_data)) {
-        return res.status(404).json({
-            "msg": "User Not Found!"
-        });
-    }
     if (amount <= 0) {
-        return res.status(400).json({
+        res.status(400)
+        return res.json({
             "msg": "Please add valid amount"
         });
     }
+    if ((!from_data || !to_data)) {
+        res.status(404)
+        return res.json({
+            "msg": "User Not Found!"
+        });
+    }
     if (from_data.balance != 0 && from_data.balance < amount) {
-        return res.status(409).json({
+        res.status(409)
+        return res.json({
             "msg": "Insufficient Balance"
         });
     }
     let request_data = await ledgerEntry.findOne({ transactionId: req.requestId, state: states[2] });
     if (request_data) {
         await ledgerEntry.deleteOne({transactionId : req.requestId, state : states[0]});
+        res.status(200)
         return res.json({
             status: request_data.state,
             sender: from,
@@ -52,7 +57,8 @@ export const makeTransaction = async (req, res) => {
     let after_reciever = await userCollection.findOne({ _id: to });
     if ((from_data.balance + amount !== after_sender.balance) && (to_data.balance + amount !== after_reciever.balance)) {
         await ledgerEntry.updateOne({ transactionId: req.requestId }, { $set: { state: states[1] } });
-        return res.status(500).json({
+        res.status(500)
+        return res.json({
             "status": states[1],
             "msg": "Transaction Interuppted"
         });
@@ -60,7 +66,8 @@ export const makeTransaction = async (req, res) => {
 
     await ledgerEntry.updateOne({ transactionId: req.requestId }, { $set: { state: states[2] } });
 
-    return res.status(200).json({
+    res.status(200)
+    return res.json({
         status: states[2],
         sender: from,
         reciever: to,
