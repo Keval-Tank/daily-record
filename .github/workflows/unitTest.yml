@@ -19,12 +19,11 @@ jobs:
      env:
         PORT : ${{vars.PORT}}
 
-    
-     services:
-        mongo :
-            image : mongo:6
-            ports : 
-                - 27017:27017
+    #  services:
+    #     mongo :
+    #         image : mongo:6
+    #         ports : 
+    #             - 27017:27017
 
      #steps to be performed in this job  
      steps:
