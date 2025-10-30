@@ -2,16 +2,18 @@
   "name": "supabase-demo",
   "version": "1.0.0",
   "description": "",
-  "type" : "module",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev" : "node --watch --env-file=.env server.js"
+    "dev": "node --watch --env-file=.env server.js",
+    "start": "node --watch --env-file=.env bucket-demo.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@supabase/supabase-js": "^2.76.1",
+    "cors": "^2.8.5",
     "express": "^5.1.0"
   }
 }

@@ -1,11 +1,15 @@
 import express, { urlencoded } from 'express'
 import supabase from './supabaseClient/supabaseClient.js'
+import cors from 'cors'
 
 const app = express()
 const PORT = process.env.PORT
 
 app.use(express.json())
 app.use(urlencoded({extended : true}))
+app.use(cors({
+    origin : 'http://localhost:3000'
+}))
 
 let user_id;
 
@@ -71,6 +75,55 @@ app.post('/login', async(req, res) => {
         })
     }
 })
+
+// create-bucket
+// app.get('/create-bucket/:bucket', async(req, res) => {
+//    try{
+//         if(!user_id){
+//             throw new AppError("Unauthorized", 401)
+//         }
+//         const {data, error} = await supabase.storage.createBucket(,{
+//             public : false,
+//             allowedMimeTypes : ['image/png'],
+//             fileSizeLimit : 5 * 1024 * 1024
+//         })
+//         if(error){
+//             throw new AppError('Bucket not created', 500)
+//         }
+//         return res.status(200).json(data)
+//    }catch(err){
+//       return res.status(err.statusCode || 500).json({
+//         "msg" : err.messsage
+//       })
+//    }
+// })
+
+//upload to bucket
+app.post('/upload-image/:bucket', async(req, res) => {
+    try{
+        const buffer = await fs.readFile('./public/download.png')
+        if(!buffer){
+            throw new AppError('Not Found', 404)
+        }
+        const path = `public/image.png`;
+        i++;
+        const {data, error} = await supabase.storage.from(req.params.bucket).upload(path, buffer, {
+            upsert : false,
+            contentType : 'image/png'
+        })
+        if(error){
+            throw error
+        }
+        if(data){
+            return res.json(data)
+        }
+    }catch(err){
+        return res.status(err.statusCode||500).json({
+        "msg" : err.messsage
+        })
+    }
+})
+
 
 // create note
 app.post('/create-note', async(req, res) => {
@@ -197,13 +250,12 @@ app.get('/signout', async(req, res) => {
         if(!user_id){
             throw new AppError('Unauthorized', 401)
         }
-        const {error} = await supabase.auth.signOut();
-        if(error === null){
-            user_id = ''
-            return res.status(204)
-        }else{
-            throw new AppError('Internal Server Error', 500)
+        const {error} = await supabase.auth.signOut()
+        if(error){
+            throw new AppError(error.message, 500)
         }
+        user_id = ''
+        return res.status(204).end();
     }catch(err){
         return res.status(err.statusCode || 500).json({
             "msg" : err.message
