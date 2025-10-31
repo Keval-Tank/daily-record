@@ -1,12 +1,13 @@
 import express, { urlencoded } from 'express'
 import supabase from './supabaseClient/supabaseClient.js'
 import cors from 'cors'
+import fs from 'fs/promises'
 
 const app = express()
 const PORT = process.env.PORT
 
-app.use(express.json())
-app.use(urlencoded({extended : true}))
+app.use(express.json({limit : '50mb'}))
+app.use(urlencoded({limit : '50mb', extended : true}))
 app.use(cors({
     origin : 'http://localhost:3000'
 }))
@@ -98,21 +99,26 @@ app.post('/login', async(req, res) => {
 //    }
 // })
 
+// storage service
 //upload to bucket
+let i = 1
 app.post('/upload-image/:bucket', async(req, res) => {
     try{
+        if(!user_id){
+            throw new AppError('Unauthorized', 401)
+        }
         const buffer = await fs.readFile('./public/download.png')
         if(!buffer){
             throw new AppError('Not Found', 404)
         }
-        const path = `public/image.png`;
+        const path = 'users/image8.png';
         i++;
         const {data, error} = await supabase.storage.from(req.params.bucket).upload(path, buffer, {
             upsert : false,
             contentType : 'image/png'
         })
         if(error){
-            throw error
+            throw new AppError(error.message, 500)
         }
         if(data){
             return res.json(data)
@@ -124,7 +130,90 @@ app.post('/upload-image/:bucket', async(req, res) => {
     }
 })
 
+// access bucket
+// get-all-files from a bucket
+app.get('/get-files/:bucket', async(req, res) => {
+    try{
+        if(!user_id){
+            throw new AppError('Unauthorized', 401)
+        }
+        const {data, error} = await supabase.storage.from(req.params.bucket).list('users')
+        if(error){
+            throw new AppError(error.message, 404)
+        }
+        if(data){
+            return res.status(200).json(data)
+        }
+    }catch(err){
+        return res.status(err.statusCode || 500).json({
+            "msg" : err.message
+        })
+    }
+})
 
+//delete file
+app.delete('/delete-file/:bucket', async(req, res) => {
+    try{
+        if(!user_id){
+            throw new AppError(user_id)
+        }
+        const {data, error} = await supabase.storage.from(req.params.bucket).remove(req.body.path)
+        if(error || data.length === 0){
+            throw new AppError('File not found', 404)
+        }
+        if(data){
+            return res.status(200).json(data)
+        }
+    }catch(err){
+        return res.status(err.statusCode || 500).json({
+            "msg" : err.message
+        })
+    }
+})
+
+//create-signed-url for download (returns a signed url which is valid for 60 secs and after that it becomes invalid)
+app.get('/create-signed-url/:bucket', async(req, res) => {
+    try{
+        if(!user_id){
+            throw new AppError('Unauthorized', 401)
+        }
+        const {data, error} = await supabase.storage.from(req.params.bucket).createSignedUrl(req.body.path, 60, {
+            transform : {
+                width : 100,
+                height : 100
+            },
+            download : true
+        })
+        if(error){
+            throw new AppError(error.message, 500)
+        }
+        return res.status(200).json(data)
+    }catch(err){
+        return res.status(err.statusCode || 500).json({
+            "msg" : err.message
+        }) 
+    }
+})
+
+// invoke edge function
+app.get('/invoke-edge-function', async(req, res) => {
+    try{
+        const { data, error } = await supabase.functions.invoke('function1', {
+            body: { writer: 'JavaScript' },
+        })
+        if(error){
+            throw new AppError(error.message, 500)
+        }
+        return res.status(200).json(data)
+    }catch(err){
+        return res.status(err.statusCode || 500).json({
+            "msg" : err.message
+        })
+    }
+})
+
+
+// DB service
 // create note
 app.post('/create-note', async(req, res) => {
     try{
@@ -135,14 +224,23 @@ app.post('/create-note', async(req, res) => {
         const {data, error} = await supabase.from('notes').insert([{writer : user_id,title, content}]).select()
         if(error){
             throw new AppError(error.message, 500)
+        }else{
+            const {data, error} = await supabase.functions.invoke('function1', {
+                body : {writer : user_id}
+            })
+            if(error){
+                throw new AppError(error.message, 500)
+            }else{
+                return res.status(201).send(data)  
+            }
         }
-        return res.status(201).json(data)  
     }catch(err){
         return res.status(err.statusCode || 500).json({
             "msg" : err.message
         })
     }
 })
+
 
 // get data 
 app.get('/get-notes', async(req, res) => {
