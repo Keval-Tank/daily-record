@@ -9,22 +9,16 @@ import {serve} from "https://deno.land/std/http/server.ts"
 
 const supabase = createClient(Deno.env.get("_SUPABASE_URL") ?? "", Deno.env.get("_SUPABASE_SERVICE_KEY") ?? "")
 serve(async(req) => {
-  const url = new URL(req.url)
-  const req_body = await req.json();
-  const path_name = url.pathname.split('/')[1]
-
-  if(path_name === 'create-note'){
-    const writer = req_body.writer
-    const {data, error} = await supabase.from('notes').select('*').eq('writer', writer)
-    if(error){
-      throw error
-    }
-    if(data){
-      return new Response(data, {
-        status : 201
-      })
-    }
+  const req_body : {writer : string} = await req.json();
+  const writer = req_body.writer;
+  const {data, error} = await supabase.from('notes').select('*').eq('writer', writer)
+  if(error){
+    throw error
   }
+  return new Response(JSON.stringify(data), {
+    status : 201,
+    headers : {"Content-Type" : "application/json"}
+  })
 })
 // const supabase = createClient(Deno.env.get("_SUPABASE_URL") ?? " ", Deno.env.get("_SUPABASE_SERVICE_KEY") ?? " ");
 

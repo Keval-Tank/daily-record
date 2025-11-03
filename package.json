@@ -6,7 +6,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "node --watch --env-file=.env server.js",
-    "start": "node --watch --env-file=.env bucket-demo.js"
+    "start": "node --watch --env-file=.env bucket-demo.js",
+    "start1": "node --watch --env-file=.env real-time.js",
+    "start2": "node --watch --env-file=.env server2.js"
   },
   "keywords": [],
   "author": "",

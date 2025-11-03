@@ -99,6 +99,32 @@ app.post('/login', async(req, res) => {
 //    }
 // })
 
+// real-time service
+const channel = supabase.channel('data-message', {
+    config : {
+        presence : {
+            key : user_id
+        }
+    }
+})
+
+// listen to database events
+channel.on('postgres_changes', {event : '*', schema : 'public', table : 'notes'}, payload => {
+    console.log("Event occured : ", payload)
+})
+
+channel.subscribe((status) => {
+    console.log(status)
+});
+
+app.get('/unsubscribe', (req, res) => {
+    const status = supabase.removeChannel(channel)
+    res.json({
+        "status" : status
+    })
+})
+
+
 // storage service
 //upload to bucket
 let i = 1
@@ -248,7 +274,7 @@ app.get('/get-notes', async(req, res) => {
         if(!user_id){
             throw new AppError('Unauthorized', 401)
         }
-        const {data, error} = await supabase.from('notes').select().eq('writer',user_id)
+        const {data, error} = await supabase.from('notes').select('*').eq('writer',user_id)
         if(error){
             throw new AppError('Data nou found!', 404)
         }
