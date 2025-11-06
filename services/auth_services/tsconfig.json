@@ -3,7 +3,7 @@
   "compilerOptions": {
     // File Layout
     // "rootDir": "./src",
-    "outDir": "./dist",
+    "outDir": "dist",
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
@@ -23,7 +23,7 @@
     // Stricter Typechecking Options
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": false,
-
+    "strictNullChecks": false,
     // Style Options
     // "noImplicitReturns": true,
     // "noImplicitOverride": true,
@@ -35,27 +35,28 @@
     // Recommended Options
     "strict": true,
     // "jsx": "react-jsx",
-    "verbatimModuleSyntax": true,
-    "isolatedModules": true,
+    "verbatimModuleSyntax": false,
+    "isolatedModules": false,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
-    "baseUrl": "./",
+    "baseUrl": "./src",
     "paths": {
-      "@/*" : ["src/*"],
-      "@shared" : ["../../shared/*"]
+      "@routes/*" : ["routes/*"],
+      "@services/*" : ["services/*"],
+      "@generated/*" : ["../generated/*"],
+      "@shared/*" : ["../../../shared/*"]
     }
   },
   // to include which files and shared types during compilation
   "include": [
-    "src/**/*",
-    "../../shared/**/*"
+    "./src/**/*",
+    "../../../shared/**/*"
   ],
   // to exclude which files and folders during compilation
   "exclude": [
-    "node_modules",
     "dist",
     "**/*.test.ts"
   ]

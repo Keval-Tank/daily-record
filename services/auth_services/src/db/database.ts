@@ -1,4 +1,4 @@
-import {PrismaClient} from 'generated/prisma/client'
+import {PrismaClient} from '@generated/prisma/client'
 
 // object passed in method ensures that in development environment you can see everything("query", "info", "warn", "error") but in production you'll see only errors
 const prisma = new PrismaClient({
