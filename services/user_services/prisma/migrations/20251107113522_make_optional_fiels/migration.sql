@@ -1,0 +1,6 @@
+-- AlterTable
+ALTER TABLE "user_profiles" ALTER COLUMN "first_name" DROP NOT NULL,
+ALTER COLUMN "last_name" DROP NOT NULL,
+ALTER COLUMN "bio" DROP NOT NULL,
+ALTER COLUMN "avatar_url" DROP NOT NULL,
+ALTER COLUMN "prefrences" DROP NOT NULL;

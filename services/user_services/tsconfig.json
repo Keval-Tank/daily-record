@@ -48,6 +48,7 @@
       "@services/*" : ["services/*"],
       "@utils/*" : ["utils/*"],
       "@db/*" : ["db/*"],
+      "@auth/*" : ["auth_client/*"],
       "@controller/*" : ["controller/*"],
       "@generated/*" : ["../generated/*"],
       "@shared/*" : ["../../../shared/*"]

@@ -3,6 +3,7 @@ import cors from 'cors'
 import helmet from 'helmet'
 import dotenv from 'dotenv'
 import authRoutes from '@routes/authRoutes'
+import { errorHandler } from '@shared/middleware'
 
 dotenv.config()
 
@@ -14,8 +15,9 @@ app.use(helmet())
 app.use(express.json({limit : "10mb"}))
 app.use(express.urlencoded({extended : true}))
 
-
 app.use('/auth', authRoutes)
+
+app.use(errorHandler)
 
 app.listen(PORT, () => {
     console.log(`Auth service running on ${PORT}`)

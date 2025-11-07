@@ -18,7 +18,7 @@ export function createSuccessResponse<T>(data : T, message? : string) : ApiRespo
     return createApiResponse(true, data, message)
 }
 
-export function createErrorResponse<T>(error :string) : ApiResponse {
+export function createErrorResponse<T>(error : string) : ApiResponse {
     return createApiResponse(false, undefined, undefined, error)
 }
 
@@ -29,5 +29,9 @@ export function createServiceError(
     details? : string
 ) : ServiceError {
     return new ServiceError(message, statusCode, code, details)
+}
+
+export function sanitizeData(input : string) {
+    return input.replace(/[<>]/g, "").trim()
 }
 
