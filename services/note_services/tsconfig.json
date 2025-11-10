@@ -24,7 +24,6 @@
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": false,
     "strictNullChecks": false,
-    "noImplicitAny": false,
     // Style Options
     // "noImplicitReturns": true,
     // "noImplicitOverride": true,
@@ -46,24 +45,22 @@
     "baseUrl": "./src",
     "paths": {
       "@routes/*" : ["routes/*"],
-      "@config/*" : ["config/*"],
-      "@shared/*" : ["../../shared/*"]
-      // "@services/*" : ["services/*"],
-      // "@utils/*" : ["utils/*"],
-      // "@db/*" : ["db/*"],
-      // "@controller/*" : ["controller/*"],
-      // "@generated/*" : ["../generated/*"],
-      // "@shared/*" : ["../../../shared/*"]
+      "@services/*" : ["services/*"],
+      "@utils/*" : ["utils/*"],
+      "@db/*" : ["db/*"],
+      "@controller/*" : ["controller/*"],
+      "@generated/*" : ["../generated/*"],
+      "@shared/*" : ["../../../shared/*"]
     }
   },
   // to include which files and shared types during compilation
-  // "include": [
-  //   "./src/**/*",
-  //   "../../../shared/**/*"
-  // ],
-  // // to exclude which files and folders during compilation
-  // "exclude": [
-  //   "dist",
-  //   "**/*.test.ts"
-  // ]
+  "include": [
+    "./src/**/*",
+    "../../../shared/**/*"
+  ],
+  // to exclude which files and folders during compilation
+  "exclude": [
+    "dist",
+    "**/*.test.ts"
+  ]
 }

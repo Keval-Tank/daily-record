@@ -88,7 +88,10 @@ export function corsOptions(){
     return {
         origin : process.env.CORS_ORIGIN || "http://localhost:3000",
         methods : ["GET","POST","PUT","DELETE", "OPTIONS"],
-        allowHeaders : ["Content-Type", "Authorization"],
-        credentials : process.env.CORS_CREDENTIALS === "true"
+        allowHeaders : ["Content-Type", "Authorization"],        credentials : process.env.CORS_CREDENTIALS === "true"
     }
+}
+
+export function healthCheck(req : Request, res : Response){
+    res.json({status : 'ok', timestamp : new Date().toISOString()})
 }

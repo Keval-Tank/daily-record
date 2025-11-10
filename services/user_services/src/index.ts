@@ -4,7 +4,7 @@ import helmet from 'helmet'
 import dotenv from 'dotenv'
 import {corsOptions} from '@shared/middleware/index'
 import userRoutes from '@routes/userRoutes'
-import { authenticateToken, errorHandler } from '@shared/middleware/index'
+import { authenticateToken, errorHandler, healthCheck} from '@shared/middleware/index'
 
 const app = express()
 const PORT = process.env.PORT || 3002;
@@ -16,6 +16,7 @@ app.use(cors(corsOptions()))
 app.use(helmet())
 
 app.use('/users',authenticateToken,userRoutes)
+app.get('/health', healthCheck)
 
 app.use(errorHandler)
 

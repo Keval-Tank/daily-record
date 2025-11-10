@@ -40,6 +40,7 @@ export class UserService{
 
         if(!user_exist){
             this.createProfile(userId, updateData);
+            return 
         }
 
         const sanitized_input = this.sanitizedData(updateData);

@@ -3,7 +3,8 @@ import cors from 'cors'
 import helmet from 'helmet'
 import dotenv from 'dotenv'
 import authRoutes from '@routes/authRoutes'
-import { errorHandler } from '@shared/middleware'
+import { errorHandler,  healthCheck} from '@shared/middleware'
+
 
 dotenv.config()
 
@@ -16,6 +17,7 @@ app.use(express.json({limit : "10mb"}))
 app.use(express.urlencoded({extended : true}))
 
 app.use('/auth', authRoutes)
+app.get('/health',  healthCheck)
 
 app.use(errorHandler)
 

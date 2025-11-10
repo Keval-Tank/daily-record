@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
+import proxyRoutes from '@routes/proxy'
 // import dotenv from 'dotenv'
 // import {corsOptions} from '@shared/middleware/index'
 // import userRoutes from '@routes/userRoutes'
@@ -24,10 +25,14 @@ app.use(helmet({
     crossOriginEmbedderPolicy : false
 }))
 
+app.use(proxyRoutes)
+
 
 const server = app.listen(PORT, () => {
     console.log(`User services running on ${PORT}`)
     console.log(`Environment : ${process.env.ENVIRONMENT}`)
+    console.log(`Auth services on : ${process.env.AUTH_SERVICE_URL}`)
+    console.log(`User services on : ${process.env.USER_SERVICE_URL}`)
 })
 
 // gracefule shutdown
