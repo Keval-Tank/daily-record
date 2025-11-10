@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "dev": "nodemon --exec \"ts-node -r dotenv/config -r tsconfig-paths/register src/index.ts\""
+  },
   "dependencies": {
     "@prisma/client": "^6.19.0",
     "axios": "^1.13.2",
@@ -10,6 +13,9 @@
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.5"
+    "@types/express": "^5.0.5",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0"
   }
 }

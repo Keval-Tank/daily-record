@@ -39,7 +39,7 @@ export class UserService{
         })
 
         if(!user_exist){
-            throw createServiceError("User Not Found", 404)
+            this.createProfile(userId, updateData);
         }
 
         const sanitized_input = this.sanitizedData(updateData);

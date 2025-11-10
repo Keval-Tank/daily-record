@@ -159,9 +159,9 @@ export class AuthService {
         // set expire date for a token entry in db table
         const expiresAt = new Date();
         expiresAt.setDate(expiresAt.getDate() + 7)
-        const user = await prisma.user.findFirst({
-            where : {id : userId}
-        })
+        // const user = await prisma.user.findFirst({
+        //     where : {id : userId}
+        // })
         
         await prisma.refreshToken.create({
             data : {
