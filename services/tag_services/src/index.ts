@@ -1,7 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
-import {authenticateToken, corsOptions, healthCheck} from '@shared/middleware/index'
+import {corsOptions, errorHandler, healthCheck} from '@shared/middleware/index'
 import tagRoutes from '@routes/tagRoutes'
 
 const app = express()
@@ -11,11 +11,12 @@ app.use(helmet())
 app.use(express.json())
 app.use(express.urlencoded({extended : true}))
 
-app.use(authenticateToken)
 
 app.use('/tags', tagRoutes)
 app.use('/health', healthCheck)
 
+
+app.use(errorHandler)
 
 app.listen(PORT, () => {
     console.log(`Tags service is running on ${PORT}`)

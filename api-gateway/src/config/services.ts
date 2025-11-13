@@ -31,7 +31,15 @@ export const servicesConfig : ServicesConfig = {
         health : "/health",
         timeout :5000,
         retries : 3
+    },
+    tags : {
+        name : "Tags Services",
+        url : process.env.TAGS_SERVICE_URL || "http://localhost:3004",
+        health : "/health",
+        timeout :5000,
+        retries : 3
     }
+    
 }
 
 export const getServiceConfig = (serviceName : string) : ServiceConfig | undefined => {
