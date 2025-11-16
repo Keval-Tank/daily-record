@@ -9,7 +9,7 @@ const HomePage = () => {
     <>
     <Hero title="Become a React Dev" subtitle='subtitle for this title'/>
     <Homecard/>
-    <JobListing/>
+    <JobListing isHome={true}/>
     <ViewAll/>
     </>
   )
