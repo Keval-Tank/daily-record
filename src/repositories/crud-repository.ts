@@ -1,4 +1,6 @@
 import Logger from "../config"
+import { AppError } from "../utils/errors/AppError";
+import { StatusCodes } from "http-status-codes";
 
 export default class CrudRepository{
     model : any
@@ -6,9 +8,8 @@ export default class CrudRepository{
         this.model = model
     }
 
-    async create(data : any){
+    async create(data : string){
         try{
-            console.log(data)
             const response = await this.model.create(data);
             return response
         }catch(err){
@@ -25,6 +26,9 @@ export default class CrudRepository{
                     id : data
                 }
             });
+            if(!response){
+                throw new AppError("Requested Data to delete is not present", StatusCodes.NOT_FOUND)
+            }
             return response
         }catch(err){
             Logger.Logger.error('Something went wrong in crud repo : destroy')
@@ -34,13 +38,12 @@ export default class CrudRepository{
 
     async get(data:any){
         try{
-            const response = await this.model.findByPk({
-                where : {
-                    id : data
-                }
-            });
+            const response = await this.model.findByPk(data);
+            if(!response){
+                throw new AppError('Requested Data is not present', StatusCodes.NOT_FOUND)
+            }
             return response
-        }catch(err){
+        }catch(err : any){
             Logger.Logger.error('Something went wrong in crud repo : get')
             throw err
         }
@@ -63,6 +66,9 @@ export default class CrudRepository{
                     id : id
                 }
             })
+            if(response[0] === 0){
+              throw new AppError("Requested Data is not present", StatusCodes.NOT_FOUND)
+            }
             return response
         }catch(err){
             Logger.Logger.error('Something went wrong in crud repo : update');
