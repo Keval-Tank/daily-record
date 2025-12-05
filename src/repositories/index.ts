@@ -1,5 +1,5 @@
-import { AirplaneRepository } from "./airplane-repository";
+// import { AirplaneRepository } from "./airplane-repository";
 
-export default {
-    AirplaneRepo : AirplaneRepository
-}
+// export default {
+//     AirplaneRepo : AirplaneRepository
+// }

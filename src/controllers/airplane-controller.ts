@@ -19,7 +19,7 @@ export const createAirplane = async(req : Request, res : Response) => {
     }
 }
 
-export const getAllPlanes = async(req : Request, res : Response) => {
+const getAllPlanes = async(req : Request, res : Response) => {
     try{
         const result = await services.AirplaneService.getAllPlanes();
         responses.SuccessResponse.data = result;
@@ -33,7 +33,12 @@ export const getAllPlanes = async(req : Request, res : Response) => {
 
 export const getPlane = async(req : Request, res : Response) => {
     try {
-        const result = await services.AirplaneService.getPlane(req.params.id)
+        if(!req.params.id){
+            responses.ErrorResponse.error = {explanation : "Plane id not found"}
+            responses.ErrorResponse.message = "Invalid input"
+            return res.status(StatusCodes.BAD_REQUEST).json(responses.ErrorResponse)
+        }
+        const result = await services.AirplaneService.getPlane(parseInt(req.params.id))
         responses.SuccessResponse.data = result;
         responses.SuccessResponse.message = "Requested plane"
         return res.status(StatusCodes.OK).json(responses.SuccessResponse)
@@ -43,26 +48,32 @@ export const getPlane = async(req : Request, res : Response) => {
     }
 }
 
-export const deletePlane = async(req : Request, res : Response) => {
-    try {
-        const result = await services.AirplaneService.deletePlane(req.params.id);
-        responses.SuccessResponse.data = result;
-        responses.SuccessResponse.message = "Deleted Successfully!"
-        return res.status(StatusCodes.OK).json(responses.SuccessResponse)
-    } catch (err : any) {
-        responses.ErrorResponse.error = err;
-        return res.status(err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json(responses.ErrorResponse)
-    }
-}
+// export const deletePlane = async(req : Request, res : Response) => {
+//     try {
+//         const result = await services.AirplaneService.deletePlane(req.params.id);
+//         responses.SuccessResponse.data = result;
+//         responses.SuccessResponse.message = "Deleted Successfully!"
+//         return res.status(StatusCodes.OK).json(responses.SuccessResponse)
+//     } catch (err : any) {
+//         responses.ErrorResponse.error = err;
+//         return res.status(err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json(responses.ErrorResponse)
+//     }
+// }
 
-export const upadtePlane = async(req : Request, res : Response) => {
-    try {
-       const result = await services.AirplaneService.updatePlane(req.body); 
-       responses.SuccessResponse.data = result;
-       responses.SuccessResponse.message = "Updated Successfully"
-       return res.status(StatusCodes.OK).json(responses.SuccessResponse)
-    } catch (err : any) {
-        responses.ErrorResponse.error = err;
-        return res.status(err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json(responses.ErrorResponse)
-    }
+// export const upadtePlane = async(req : Request, res : Response) => {
+//     try {
+//        const result = await services.AirplaneService.updatePlane(req.body); 
+//        responses.SuccessResponse.data = result;
+//        responses.SuccessResponse.message = "Updated Successfully"
+//        return res.status(StatusCodes.OK).json(responses.SuccessResponse)
+//     } catch (err : any) {
+//         responses.ErrorResponse.error = err;
+//         return res.status(err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR).json(responses.ErrorResponse)
+//     }
+// }
+
+export default {
+    createAirplane,
+    getAllPlanes,
+    getPlane
 }

@@ -1,6 +1,6 @@
-import { createAirplane, getAllPlanes, getPlane, deletePlane, updatePlane } from "./airplane-services"
-import cityServices from "./city-service"
+import airplaneServices from "./airplane-services"
+// import cityServices from "./city-service"
 export default {
-    AirplaneService : {createAirplane, getAllPlanes, getPlane, deletePlane, updatePlane},
-    CityService : cityServices
+    AirplaneService : airplaneServices,
+    // CityService : cityServices
 }
