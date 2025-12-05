@@ -7,15 +7,16 @@ import {prisma} from '../prismaClient'
 // const airplaneRepo = new AirplaneRepository()
 
 // create airplane
-async function createAirplane(plane_data:any){
+async function createAirport(airport_data:any){
     try{
-        const airplane = await prisma.airplane.create({
+        const airport = await prisma.airport.create({
             data : {
-                modelNumber : plane_data.modelNumber,
-                capacity : parseInt(plane_data.capacity)
+                name : airport_data.name,
+                cityId : parseInt(airport_data.cityId),
+                code : airport_data.code
             }
         })
-        return airplane;
+        return airport;
     }catch(err : any){
         // if(err.name === 'PrismaClientValidationError'){
         //     const explanation : any = [];
@@ -29,41 +30,42 @@ async function createAirplane(plane_data:any){
 }
 
 // get all palnes
-async function getAllPlanes(){
+async function getPorts(){
     try {
-        const planes = await prisma.airplane.findMany();
-        return planes
+        const airports = await prisma.airport.findMany();
+        return airports
     } catch (err : any) {
         throw new AppError(err, err.statusCode)
     }
 }
 
 // get Single plane
-export async function getPlane(id : any){
+export async function getAirport(code : any){
     try {
-        const plane = await prisma.airplane.findFirst({
+        const airport = await prisma.airport.findUnique({
             where : {
-                id : id
+                code : String(code)
             }
         });
-        if(!plane){
+        if(!airport){
             throw new AppError("Not Found!", StatusCodes.NOT_FOUND)
         }
-        return plane
+        return airport
     } catch (err:any) {
         if(err.statusCode === StatusCodes.NOT_FOUND){
             throw new AppError("Requested plane is not present", err.statusCode)
         }
+        console.log(err)
         throw new AppError(err, err.statusCode)
     }
 }
 
 // delete a plane
-export async function deletePlane(id : any){
+export async function deleteAirport(code : any){
     try {
-        const result = await prisma.airplane.delete({
+        const result = await prisma.airport.delete({
             where : {
-                id : id
+                code : code
             }
         })
         return result;
@@ -77,15 +79,16 @@ export async function deletePlane(id : any){
 
 
 // update a plane
-async function updatePlane(updatedata : any){
+async function updateAirport(updatedata : any){
     try{
-        const result = await prisma.airplane.update({
+        const result = await prisma.airport.update({
             where : {
-                id : updatedata.id
+                id : parseInt(updatedata.id)
             },
             data : {
-                modelNumber : updatedata.modelNumber,
-                capacity : updatedata.capacity
+                name : updatedata.name,
+                cityId : parseInt(updatedata.cityId),
+                code : updatedata.code
             }
         })
         return result
@@ -93,12 +96,11 @@ async function updatePlane(updatedata : any){
         throw new AppError(err, err.statusCode)
     }
 }
-
 export default {
-    createAirplane,
-    getAllPlanes,
-    getPlane,
-    deletePlane,
-    updatePlane
+    createAirport,
+    getPorts,
+    getAirport,
+    deleteAirport,
+    updateAirport
 }
 

@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,11 +6,46 @@ datasource db {
   provider = "postgresql"
 }
 
+model Airplane {
+  id          Int      @id @default(autoincrement())
+  modelNumber String
+  capacity    Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  flights     Flight[]
+}
 
-model Airplane{
-  id               Int           @id @default(autoincrement())
-  modelNumber      String     
-  capacity         Int           @default(0)
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
+model City {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  airports  Airport[]
+}
+
+model Airport {
+  name             String   @unique
+  code             String   @unique
+  address          String?  @unique
+  cityId           Int
+  id               Int      @id @default(autoincrement())
+  city             City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  arrivalFlights   Flight[] @relation("ArrivalAirport")
+  departureFlights Flight[] @relation("DepartureAirport")
+}
+
+model Flight {
+  id                 Int      @id @default(autoincrement())
+  flightNumber       String
+  airplaneId         Int
+  departureAirportId String
+  arrivalAirportId   String
+  arrivalTime        DateTime
+  departureTime      DateTime
+  price              Int
+  boardingGate       String?
+  totalSeats         Int
+  airplane           Airplane @relation(fields: [airplaneId], references: [id], onDelete: Cascade)
+  arrivalAirport     Airport  @relation("ArrivalAirport", fields: [arrivalAirportId], references: [code], onDelete: Cascade)
+  departureAirport   Airport  @relation("DepartureAirport", fields: [departureAirportId], references: [code], onDelete: Cascade)
 }

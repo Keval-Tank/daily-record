@@ -1,17 +1,18 @@
 import { StatusCodes } from "http-status-codes";
-import {response, type Request, type Response} from 'express'
+import {type Request, type Response} from 'express'
 import services from "../services";
 import responses from "../utils/common"
 
-export const createAirplane = async(req : Request, res : Response) => {
+export const createAirport = async(req : Request, res : Response) => {
     try{
         const data = {
-            modelNumber : req.body.modelNumber,
-            capacity : req.body.capacity
+            name : req.body.name,
+            code : req.body.code,
+            cityId : parseInt(req.body.cityId)
         }
-        const result = await services.AirplaneService.createAirplane(data);
+        const result = await services.AirportServices.createAirport(data);
         responses.SuccessResponse.data = result;
-        responses.SuccessResponse.message = "Plane created Successfully"
+        responses.SuccessResponse.message = "Airport created Successfully"
         return res.status(StatusCodes.CREATED).json(responses.SuccessResponse)
     }catch(err : any){
         responses.ErrorResponse.error=err
@@ -19,11 +20,11 @@ export const createAirplane = async(req : Request, res : Response) => {
     }
 }
 
-const getAllPlanes = async(req : Request, res : Response) => {
+const getPorts = async(req : Request, res : Response) => {
     try{
-        const result = await services.AirplaneService.getAllPlanes();
+        const result = await services.AirportServices.getPorts();
         responses.SuccessResponse.data = result;
-        responses.SuccessResponse.message = "All available planes"
+        responses.SuccessResponse.message = "All available ports"
         return res.status(StatusCodes.OK).json(responses.SuccessResponse)
     }catch(err:any){
         responses.ErrorResponse.error=err
@@ -31,16 +32,16 @@ const getAllPlanes = async(req : Request, res : Response) => {
     }
 }
 
-export const getPlane = async(req : Request, res : Response) => {
+export const getAirport = async(req : Request, res : Response) => {
     try {
-        if(!req.params.id){
-            responses.ErrorResponse.error = {explanation : "Plane id not found"}
+        if(!req.params.code){
+            responses.ErrorResponse.error = {explanation : "Airport code not found"}
             responses.ErrorResponse.message = "Invalid input"
             return res.status(StatusCodes.BAD_REQUEST).json(responses.ErrorResponse)
         }
-        const result = await services.AirplaneService.getPlane(parseInt(req.params.id))
+        const result = await services.AirportServices.getAirport(req.params.code)
         responses.SuccessResponse.data = result;
-        responses.SuccessResponse.message = "Requested plane"
+        responses.SuccessResponse.message = "Requested Airport"
         return res.status(StatusCodes.OK).json(responses.SuccessResponse)
     } catch (err:any) {
         responses.ErrorResponse.error=err
@@ -48,14 +49,14 @@ export const getPlane = async(req : Request, res : Response) => {
     }
 }
 
-const deletePlane = async(req : Request, res : Response) => {
+const deleteAirport = async(req : Request, res : Response) => {
     try {
-        if(!req.params.id){
-           responses.ErrorResponse.error = {explanation : "Plane id not found"}
+        if(!req.params.code){
+           responses.ErrorResponse.error = {explanation : "Airport code not found"}
            responses.ErrorResponse.message = "Invalid input"
            return res.status(StatusCodes.BAD_REQUEST).json(responses.ErrorResponse)
         }
-        const result = await services.AirplaneService.deletePlane(parseInt(req.params.id));
+        const result = await services.AirportServices.deleteAirport(req.params.code);
         responses.SuccessResponse.data = result;
         responses.SuccessResponse.message = "Deleted Successfully!"
         return res.status(StatusCodes.OK).json(responses.SuccessResponse)
@@ -65,9 +66,9 @@ const deletePlane = async(req : Request, res : Response) => {
     }
 }
 
-const upadtePlane = async(req : Request, res : Response) => {
+const upadteAirport = async(req : Request, res : Response) => {
     try {
-       const result = await services.AirplaneService.updatePlane(req.body); 
+       const result = await services.AirportServices.updateAirport(req.body); 
        responses.SuccessResponse.data = result;
        responses.SuccessResponse.message = "Updated Successfully"
        return res.status(StatusCodes.OK).json(responses.SuccessResponse)
@@ -78,9 +79,9 @@ const upadtePlane = async(req : Request, res : Response) => {
 }
 
 export default {
-    createAirplane,
-    getAllPlanes,
-    getPlane,
-    deletePlane,
-    upadtePlane
+    createAirport,
+    getPorts,
+    getAirport,
+    deleteAirport,
+    upadteAirport
 }
