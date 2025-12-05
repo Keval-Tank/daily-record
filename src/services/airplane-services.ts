@@ -1,14 +1,26 @@
 import { AirplaneRepository } from "../repositories/airplane-repository";
 import { AppError } from "../utils/errors/AppError";
 import { StatusCodes } from "http-status-codes";
+import supabase from "../supabaseClient";
 
 const airplaneRepo = new AirplaneRepository()
 
 // create airplane
-export async function createAirplane(data:any){
+export async function createAirplane(planedata:any){
     try{
-        const airplane = await airplaneRepo.create(data);
-        return airplane;
+        const {data, error} = await supabase
+        .from('airplanes')
+        .insert([
+            {
+                modelnumber : planedata.modelNumber,
+                capacity : planedata.capacity
+            },
+        ])
+        .select();
+        if(error){
+            throw new AppError(error.message, parseInt(error.code))
+        }
+        return data
     }catch(err : any){
         if(err.name === 'SequelizeValidationError'){
             const explanation : any = [];
@@ -24,8 +36,13 @@ export async function createAirplane(data:any){
 // get all palnes
 export async function getAllPlanes(){
     try {
-        const planes = await airplaneRepo.getAll();
-        return planes
+        const {data, error} = await supabase
+        .from('airplanes')
+        .select();
+        if(error){
+            throw new AppError(error.message, parseInt(error.code) || StatusCodes.INTERNAL_SERVER_ERROR)
+        }
+        return data;
     } catch (err : any) {
         throw new AppError(err, err.statusCode)
     }
@@ -34,8 +51,17 @@ export async function getAllPlanes(){
 // get Single plane
 export async function getPlane(id : any){
     try {
-        const plane = await airplaneRepo.get(id);
-        return plane
+        const {data, error} = await supabase
+        .from('airplanes')
+        .select()
+        .eq('id', id);
+        if(error){
+            throw new AppError(error.message, parseInt(error.code) || StatusCodes.INTERNAL_SERVER_ERROR)
+        }
+        if(data.length === 0){
+            throw new AppError('Plane not find', StatusCodes.NOT_FOUND)
+        }
+        return data
     } catch (err:any) {
         if(err.statusCode === StatusCodes.NOT_FOUND){
             throw new AppError("Requested plane is not present", err.statusCode)
@@ -47,8 +73,16 @@ export async function getPlane(id : any){
 // delete a plane
 export async function deletePlane(id : any){
     try {
-        const result = await airplaneRepo.destory(id);
-        return result;
+        const {data, error} = await supabase
+        .from('airplanes')
+        .delete()
+        .eq('id', id)
+        .select();
+        if(error){
+            throw new AppError(error.message, parseInt(error.code) || StatusCodes.INTERNAL_SERVER_ERROR)
+        }
+        console.log(data)
+        return data
     } catch (error:any) {
         if(error.statusCode === StatusCodes.NOT_FOUND){
             throw new AppError("Requested plane is not present", error.statusCode)
