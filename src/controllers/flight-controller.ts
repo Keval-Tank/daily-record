@@ -16,7 +16,7 @@ const createFlight = async(req : Request, res : Response) => {
             totalSeats : parseInt(req.body.totalSeats)
 
         }
-        const result = await services.AirplaneService.createAirplane(data);
+        const result = await services.FlightServices.createFlight(data);
         responses.SuccessResponse.data = result;
         responses.SuccessResponse.message = "Flight created Successfully"
         return res.status(StatusCodes.CREATED).json(responses.SuccessResponse)
@@ -26,7 +26,20 @@ const createFlight = async(req : Request, res : Response) => {
     }
 }
 
+const getFlights = async(req : Request, res : Response) => {
+    try{
+        const result = await services.FlightServices.getAllFlights(req.query);
+        responses.SuccessResponse.data = result;
+        responses.SuccessResponse.message = "All Avialable Flights"
+        return res.status(StatusCodes.OK).json(responses.SuccessResponse)
+    }catch(err : any){
+        responses.ErrorResponse.error=err
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(responses.ErrorResponse)
+    }
+}
+
 export default {
-    createFlight
+    createFlight,
+    getFlights
 }
 

@@ -13,6 +13,7 @@ model Airplane {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   flights     Flight[]
+  seats       Seat[]
 }
 
 model City {
@@ -48,4 +49,20 @@ model Flight {
   airplane           Airplane @relation(fields: [airplaneId], references: [id], onDelete: Cascade)
   arrivalAirport     Airport  @relation("ArrivalAirport", fields: [arrivalAirportId], references: [code], onDelete: Cascade)
   departureAirport   Airport  @relation("DepartureAirport", fields: [departureAirportId], references: [code], onDelete: Cascade)
+}
+
+model Seat {
+  id         Int      @id @default(autoincrement())
+  airplaneId Int
+  row        Int
+  col        String
+  type       SeatType @default(ECONOMY)
+  airplane   Airplane @relation(fields: [airplaneId], references: [id], onDelete: Cascade)
+}
+
+enum SeatType {
+  BUSINESS
+  ECONOMY
+  PREMIUM_ECONOMY
+  FIRST_CLASS
 }

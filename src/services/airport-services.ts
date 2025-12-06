@@ -32,7 +32,12 @@ async function createAirport(airport_data:any){
 // get all palnes
 async function getPorts(){
     try {
-        const airports = await prisma.airport.findMany();
+        const airports = await prisma.airport.findMany({
+            include : {
+                arrivalFlights : true,
+                departureFlights : true
+            }
+        });
         return airports
     } catch (err : any) {
         throw new AppError(err, err.statusCode)
