@@ -4,3 +4,4 @@ combined.log
 error.log
 src/config/config.json
 /src/generated/prisma
+.DS_Store
