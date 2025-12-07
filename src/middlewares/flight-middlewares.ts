@@ -2,7 +2,7 @@ import { type Request, type Response, type NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
 import responses from '../utils/common'
 
-export const validateFlightRequest = (req : Request, res : Response, next : NextFunction) => {
+const validateFlightRequest = (req : Request, res : Response, next : NextFunction) => {
     if(!req.body.flightNumber){
        responses.ErrorResponse.message = "Something went wrong while creating flight"
        responses.ErrorResponse.error = {explanation : "Flight Number was not found"}
@@ -45,4 +45,18 @@ export const validateFlightRequest = (req : Request, res : Response, next : Next
     }
 
     next();
+}
+
+const validateUpdateReq = (req : Request, res : Response, next : NextFunction) => {
+   if(!req.body.id){
+      responses.ErrorResponse.message = "Something went wrong while updating seats"
+      responses.ErrorResponse.error = {explanation : "flight id was not found"}
+      return res.status(StatusCodes.BAD_REQUEST).json(responses.ErrorResponse);
+   }
+   next();
+}
+
+export default {
+   validateFlightRequest,
+   validateUpdateReq
 }

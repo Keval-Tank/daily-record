@@ -60,9 +60,27 @@ model Seat {
   airplane   Airplane @relation(fields: [airplaneId], references: [id], onDelete: Cascade)
 }
 
+model Booking {
+  id        Int           @id @default(autoincrement())
+  flightId  Int
+  userId    Int
+  status    BookingStatus @default(INITIATED)
+  noOfSeats Int           @default(1)
+  totalCost Int
+  createdAt DateTime      @default(now())
+  updatedAt DateTime
+}
+
 enum SeatType {
   BUSINESS
   ECONOMY
   PREMIUM_ECONOMY
   FIRST_CLASS
+}
+
+enum BookingStatus {
+  BOOKED
+  CANCELLED
+  INITIATED
+  PENDING
 }
