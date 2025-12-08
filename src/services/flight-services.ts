@@ -122,27 +122,29 @@ async function getFlight(id: any) {
 // update remaining seats in a flight
 async function updateRemainingSeats(update_data: any) {
     try {
-        if (update_data.dec) {
-            const result = await prisma.flight.update({
+        return prisma.$transaction(async (tx) => {
+            if (update_data.dec) {
+            const result = await tx.flight.update({
                 where: {
                     id: update_data.id
                 },
                 data: {
-                    totalSeats: { decrement: 1 }
+                    totalSeats: { decrement: update_data.seats }
                 }
             })
             return result
         } else {
-            const result = await prisma.flight.update({
+            const result = await tx.flight.update({
                 where: {
                     id: update_data.id
                 },
                 data: {
-                    totalSeats: { increment: 1 }
+                    totalSeats: { increment: update_data.seats }
                 }
             })
             return result
         }
+        })
     } catch (err) {
         throw err
     }

@@ -51,6 +51,7 @@ const getFlight = async (req: Request, res: Response) => {
 }
 interface UpdateSeat {
     id : number,
+    seats : number,
     dec? : string
 }
 const updateRemainingSeats = async (req: Request, res: Response) => {
@@ -59,12 +60,12 @@ const updateRemainingSeats = async (req: Request, res: Response) => {
         if(req.body.dec){
             data.dec = req.body.dec;
         }
-        data.id = parseInt(req.body.id);
+        data.id = parseInt(req.params.id!);
+        data.seats = parseInt(req.body.seats)
         const result = await services.FlightServices.updateRemainingSeats(data);
         responses.SuccessResponse.data = result;
         responses.SuccessResponse.message = "Remaining Seats";
         return res.status(StatusCodes.OK).json(responses.SuccessResponse)
-        return 
     } catch (err: any) {
         responses.ErrorResponse.error = err;
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(responses.ErrorResponse)

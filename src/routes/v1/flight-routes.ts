@@ -7,6 +7,6 @@ const router = Router()
 router.post('/', middlewares.FlightMiddlewares.validateFlightRequest ,controller.FlightController.createFlight);
 router.get('/', controller.FlightController.getFlights)
 router.get('/:id', controller.FlightController.getFlight)
-router.patch('/', middlewares.FlightMiddlewares.validateUpdateReq , controller.FlightController.updateRemainingSeats)
+router.patch('/:id/seats', middlewares.FlightMiddlewares.validateUpdateReq , controller.FlightController.updateRemainingSeats)
 
 export default router

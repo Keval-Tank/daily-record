@@ -48,9 +48,9 @@ const validateFlightRequest = (req : Request, res : Response, next : NextFunctio
 }
 
 const validateUpdateReq = (req : Request, res : Response, next : NextFunction) => {
-   if(!req.body.id){
+   if(!req.body.seats){
       responses.ErrorResponse.message = "Something went wrong while updating seats"
-      responses.ErrorResponse.error = {explanation : "flight id was not found"}
+      responses.ErrorResponse.error = {explanation : "Seats was not found"}
       return res.status(StatusCodes.BAD_REQUEST).json(responses.ErrorResponse);
    }
    next();
